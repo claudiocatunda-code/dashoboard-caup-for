@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ranking Comercial FOR · CAUP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',sans-serif;background:#0b1a10;color:#fff;font-size:13px}
+#app{display:flex;flex-direction:column;min-height:100vh}
+
+/* ── HEADER ── */
+header{
+  flex-shrink:0;position:relative;
+  background:#081209;border-bottom:1px solid rgba(255,255,255,.07);
+  padding:9px 28px;display:flex;align-items:center;justify-content:space-between;
+}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-icon{width:36px;height:36px;border-radius:9px;background:#1a2e1f;border:1px solid #2d5c38;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-text .t1{font-size:14px;font-weight:800;color:#fff;letter-spacing:-.2px}
+.logo-text .t2{font-size:10px;color:#22c55e;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-top:2px}
+.hdr-right{display:flex;align-items:center;gap:8px}
+#ts{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.02em}
+.hdr-btn{
+  display:flex;align-items:center;gap:5px;padding:5px 13px;border-radius:6px;
+  background:transparent;border:1px solid rgba(255,255,255,.12);
+  color:rgba(255,255,255,.55);font-size:11px;font-weight:600;font-family:'Inter',sans-serif;
+  cursor:pointer;transition:all .15s;
+}
+.hdr-btn:hover{border-color:rgba(34,197,94,.4);color:#22c55e;background:rgba(34,197,94,.06)}
+.hdr-btn.loading{opacity:.5;pointer-events:none}
+.hdr-btn svg{width:11px;height:11px}
+.hdr-btn.loading svg{animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#rotation-bar-wrap{position:absolute;bottom:0;left:0;right:0;height:2px;background:rgba(255,255,255,.06);overflow:hidden}
+#rotation-bar{height:100%;background:#22c55e;width:0%;transition:width linear;opacity:.7}
+
+/* ── MAIN TABS ── */
+.main-tabs{flex-shrink:0;display:flex;gap:2px;padding:10px 28px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.main-tab{
+  padding:6px 20px;border:1px solid transparent;border-bottom:none;
+  border-radius:8px 8px 0 0;cursor:pointer;
+  font-size:12px;font-weight:600;font-family:'Inter',sans-serif;
+  color:rgba(255,255,255,.3);background:transparent;transition:all .12s;
+}
+.main-tab.on{background:#0f2017;color:#fff;border-color:rgba(255,255,255,.08);border-bottom-color:#0b1a10;margin-bottom:-1px}
+.main-tab:hover:not(.on){color:rgba(255,255,255,.6)}
+
+/* ── PANELS ── */
+.main-panel{display:none;flex:1;flex-direction:column}
+.main-panel.on{display:flex}
+
+/* ── KPI CARDS (ranking) ── */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;flex-shrink:0;padding:14px 28px 0}
+.kpi{background:#0d2116;border:1px solid rgba(34,197,94,.2);border-radius:14px;padding:16px 18px 14px;position:relative;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.3),inset 0 1px 0 rgba(34,197,94,.08)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,rgba(34,197,94,.6),rgba(34,197,94,.15))}
+.kpi:first-child{border-color:rgba(255,255,255,.1)}.kpi:first-child::before{background:linear-gradient(90deg,rgba(255,255,255,.2),rgba(255,255,255,.04))}
+.kpi-l{font-size:9px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;font-weight:700}
+.kpi-v{font-size:26px;font-weight:800;line-height:1;letter-spacing:-.6px;color:#fff}
+.kpi-v.accent{color:#22c55e;text-shadow:0 0 24px rgba(34,197,94,.25)}
+.kpi-bar-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px;margin-bottom:5px}
+.kpi-bar-label{font-size:9px;color:rgba(255,255,255,.35);font-weight:500}
+.kpi-bar-pct{font-size:11px;color:#fff;font-weight:700}
+.kpi-bar-bg{height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-bottom:6px}
+.kpi-bar-fill{height:100%;border-radius:2px;background:#22c55e;transition:width .6s ease;box-shadow:0 0 6px rgba(34,197,94,.4)}
+.kpi-s{font-size:10px;color:rgba(255,255,255,.3);margin-top:0}
+.kpi-s.red{color:rgba(255,100,100,.55)}
+
+/* ── RANKING INNER LAYOUT ── */
+.rank-body{padding:0 28px 10px;flex:1;display:flex;flex-direction:column}
+.prog-hdr{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.3);margin-bottom:4px;flex-shrink:0}
+.bar-bg{height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-bottom:8px;flex-shrink:0}
+.bar-fill{height:100%;border-radius:2px;background:#22c55e;transition:width .6s ease}
+.sec{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.3);border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:6px;margin-bottom:8px;flex-shrink:0}
+.main-layout{display:grid;grid-template-columns:420px 1fr;gap:14px;flex:1}
+.left-col{display:flex;flex-direction:column;gap:8px}
+.pod-card{flex-shrink:0;background:#071a0e;border:1px solid rgba(34,197,94,.35);border-radius:16px;padding:14px 16px 0;box-shadow:0 0 32px rgba(34,197,94,.07),inset 0 1px 0 rgba(34,197,94,.1)}
+.pod-title{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#22c55e;text-align:center;margin-bottom:12px;font-weight:700}
+.podium{display:flex;align-items:flex-end;justify-content:center}
+.ps{display:flex;flex-direction:column;align-items:center;flex:1}
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden;flex-shrink:0;border:3px solid transparent;font-family:'Inter',sans-serif;}
+.av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.ps.f .av{width:96px;height:96px;font-size:28px;border-color:#ffd740;background:rgba(255,215,64,.1);color:#ffd740;box-shadow:0 0 22px rgba(255,215,64,.2)}
+.ps.s .av{width:72px;height:72px;font-size:20px;border-color:#c0cdd4;background:rgba(176,190,197,.08);color:#c0cdd4}
+.ps.t .av{width:62px;height:62px;font-size:17px;border-color:#cd7f32;background:rgba(205,127,50,.08);color:#cd7f32}
+.pn{font-size:11px;font-weight:700;text-align:center;margin-top:6px;line-height:1.2;color:rgba(255,255,255,.75)}
+.ps.f .pn{font-size:13px;color:#fff;font-weight:800}
+.pv{font-size:11px;font-weight:700;margin-top:2px;text-align:center;color:rgba(255,255,255,.55)}
+.ps.f .pv{font-size:15px;color:#fff;font-weight:800}
+.pp{margin-top:2px;text-align:center}
+.pct-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.4)}
+.ps.f .pct-lbl{color:#22c55e;font-size:12px;font-weight:800}
+.ps.s .pct-lbl{color:rgba(192,205,212,.7)}.ps.t .pct-lbl{color:rgba(180,130,80,.7)}
+.pb{width:100%;border-radius:5px 5px 0 0;display:flex;align-items:center;justify-content:center;font-weight:800;margin-top:8px;font-family:'Inter',sans-serif}
+.ps.f .pb{height:56px;font-size:20px;color:#ffd740;background:rgba(255,215,64,.07);border-top:1px solid rgba(255,215,64,.2)}
+.ps.s .pb{height:40px;font-size:15px;color:rgba(192,205,212,.6);background:rgba(192,205,212,.04);border-top:1px solid rgba(192,205,212,.1)}
+.ps.t .pb{height:28px;font-size:13px;color:rgba(180,130,80,.6);background:rgba(180,130,80,.04);border-top:1px solid rgba(180,130,80,.1)}
+.zonas{display:flex;flex-direction:column;gap:7px}
+.zona-card{border-radius:10px;padding:10px 12px;border:1px solid rgba(34,197,94,.2);background:#0a1e11}
+.zona-card.super-zone{border-color:rgba(255,215,64,.3);background:#131000;box-shadow:0 0 12px rgba(255,215,64,.04)}
+.zona-header{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.zona-badge{padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:rgba(34,197,94,.15);color:#4ade80}
+.super-zone .zona-badge{background:rgba(255,215,64,.15);color:#ffd740}
+.zona-sub{font-size:9px;color:rgba(255,255,255,.25);font-weight:500;margin-left:auto}
+.zona-pessoas{display:flex;flex-wrap:wrap;gap:5px}
+.zona-chip{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:7px;min-width:120px;flex:1;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.15)}
+.super-zone .zona-chip{border-color:rgba(255,215,64,.18);background:rgba(255,215,64,.06)}
+.zona-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;overflow:hidden;background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.25)}
+.zona-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.super-zone .zona-av{background:rgba(255,215,64,.12);color:#ffd740;border-color:rgba(255,215,64,.25)}
+.zona-info{flex:1;min-width:0}
+.zona-nome{font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.zona-val{font-size:10px;color:#4ade80;margin-top:1px;font-weight:600}
+.super-zone .zona-val{color:#ffd740}
+.zona-empty{font-size:11px;color:rgba(255,255,255,.2);padding:4px 0;font-style:italic}
+.table-wrap{flex:1;overflow-y:auto}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.3);text-align:right;padding:0 8px 9px;font-weight:600;position:sticky;top:0;background:#0b1a10}
+thead th:first-child{text-align:left}
+tbody tr{border-top:1px solid rgba(255,255,255,.05);transition:background .1s}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+tbody td{padding:8px 8px;text-align:right;font-size:12px;color:rgba(255,255,255,.75)}
+tbody td:first-child{text-align:left;color:#fff}
+.rp{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;font-size:9px;font-weight:700;margin-right:6px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.35)}
+.pill{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
+.pill.g{background:rgba(34,197,94,.12);color:#4ade80}
+.pill.a{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55)}
+.pill.r{background:rgba(255,255,255,.06);color:rgba(255,255,255,.4)}
+.mb{display:flex;align-items:center;gap:7px}
+.mb-bg{flex:1;height:2px;background:rgba(255,255,255,.07);border-radius:2px;min-width:50px}
+.mb-fill{height:100%;border-radius:2px;background:#22c55e}
+.mc{text-align:center}
+
+/* ── SUB-TABS (SDR) ── */
+.subtabs{display:flex;gap:4px;margin-bottom:10px;flex-shrink:0}
+.subtab{padding:4px 14px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;font-family:'Inter',sans-serif;color:rgba(255,255,255,.35);background:transparent;border:1px solid rgba(255,255,255,.08);transition:all .12s}
+.subtab.on{background:rgba(34,197,94,.12);color:#4ade80;border-color:rgba(34,197,94,.25)}
+.subpanel{display:none;flex:1;flex-direction:column}
+.subpanel.on{display:flex}
+
+/* ── PLACAR DE VENDAS ── */
+#panel-placar{padding:0}
+.placar-wrap{flex:1}
+
+/* Canal pill dentro do placar */
+.canal-pill{display:flex;gap:2px;background:#0d1510;border:1px solid #1e2d24;border-radius:10px;padding:3px}
+.ctb{background:transparent;border:none;border-radius:7px;color:rgba(255,255,255,.35);padding:5px 14px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}
+.ctb:hover{color:#a3e4b8;background:rgba(34,197,94,.08)}
+.ctb.on{background:#1a3d27;color:#4ade80}
+
+/* Conteúdo placar */
+.placar-main{padding:20px 28px;display:flex;flex-direction:column;gap:20px}
+.sec-hdr{display:flex;align-items:center;gap:12px;margin-bottom:2px}
+.sec-lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#4ade80;white-space:nowrap}
+.sec-line{flex:1;height:1px;background:linear-gradient(90deg,#1e3a28,transparent)}
+.kpi-hero{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.card-realizado{background:#111f16;border:1px solid #1e3a28;border-top:2px solid #4ade80;border-radius:14px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;min-height:130px}
+.card-kpi{background:#111f16;border:1px solid #1e3a28;border-top:2px solid #1e3a28;border-radius:14px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;min-height:130px}
+.card-kpi.pace{border-top-color:#22d3ee}.card-kpi.gap{border-top-color:#64748b}.card-kpi.meta{border-top-color:#22d3ee}
+.kpi-sec{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.card-sec{background:#111f16;border:1px solid #1e3a28;border-top:2px solid #1e3a28;border-radius:12px;padding:18px}
+.card-sec.proposta{border-top-color:#f59e0b}.card-sec.tkm{border-top-color:#22d3ee}.card-sec.cancel{border-top-color:#64748b}
+.klbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px}
+.kval{font-size:26px;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1}
+.kval.hero-val{color:#4ade80}.kval.meta-val{color:#22d3ee}
+.ksub{font-size:11px;color:rgba(255,255,255,.3);margin-top:6px}
+.prog-wrap{margin-top:12px}
+.prog-info{display:flex;justify-content:space-between;font-size:10px;margin-bottom:5px}
+.pi-label{color:rgba(255,255,255,.4)}.pi-val{font-weight:700;font-size:12px}
+.pi-val.g{color:#4ade80}.pi-val.t{color:#22d3ee}.pi-val.a{color:#f59e0b}.pi-val.s{color:#94a3b8}
+.pbar{height:5px;border-radius:3px;background:#1a2e22;overflow:hidden}
+.pfill{height:100%;border-radius:3px;transition:width .8s}
+.pfill.g{background:linear-gradient(90deg,#16a34a,#4ade80)}.pfill.t{background:linear-gradient(90deg,#0e7490,#22d3ee)}.pfill.a{background:linear-gradient(90deg,#b45309,#f59e0b)}.pfill.s{background:#334155}
+.semanas{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.sem-card{background:#111f16;border:1px solid #1e3a28;border-radius:12px;padding:16px}
+.sem-card.s1{border-top:2px solid #22d3ee}.sem-card.s2{border-top:2px solid #4ade80}.sem-card.s3{border-top:2px solid #f59e0b}.sem-card.s4{border-top:2px solid #64748b}
+.sem-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.sem-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.sem-pct{font-size:24px;font-weight:900;letter-spacing:-1px;line-height:1;color:#fff}
+.sem-trio{display:grid;grid-template-columns:1fr 1fr 1fr;margin-bottom:12px}
+.sem-col{text-align:center;padding:6px 4px}
+.sem-col-l{font-size:9px;text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px}
+.sem-col-v{font-size:12px;font-weight:700;line-height:1}
+.col-plan .sem-col-l{color:#3a5a46}.col-plan .sem-col-v{color:rgba(255,255,255,.35)}
+.col-proj .sem-col-l{color:#0e7490}.col-proj .sem-col-v{color:#22d3ee}
+.col-real .sem-col-l{color:#16a34a}.col-real .sem-col-v{color:#4ade80}
+.sem-bar{height:3px;border-radius:2px;background:#1a2e22;overflow:hidden;margin-bottom:6px}
+.sem-fill{height:100%;border-radius:2px}
+.sem-foot{font-size:10px;color:rgba(255,255,255,.35)}
+.sem-foot strong{color:#a3c4ae;font-weight:600}
+.funil-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.box{background:#111f16;border:1px solid #1e3a28;border-radius:14px;padding:20px}
+.box-title{font-size:14px;font-weight:800;color:#fff;margin-bottom:3px}
+.box-sub{font-size:11px;color:rgba(255,255,255,.3);margin-bottom:16px}
+.chart-wrap{position:relative;height:180px;margin-bottom:16px}
+.ftable{}
+.frow{display:grid;align-items:center;padding:7px 0;border-bottom:1px solid #1a2e22}
+.frow:last-child{border-bottom:none}
+.fc{font-size:12px;font-weight:600;color:#e8f5ee}
+.fc.hd{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:rgba(255,255,255,.25)}
+.fc.dim{color:rgba(255,255,255,.35);font-weight:400}.fc.proj{color:#22d3ee;font-weight:700}.fc.pos{color:#4ade80}.fc.neg{color:#94a3b8}
+.badge2{display:inline-block;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700}
+.badge2.g{background:rgba(74,222,128,.15);color:#4ade80}.badge2.a{background:rgba(245,158,11,.15);color:#f59e0b}.badge2.s{background:rgba(148,163,184,.12);color:#94a3b8}
+.cr-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.cr-card{background:#0d1a10;border:1px solid #1a2e22;border-radius:10px;padding:12px 8px;text-align:center}
+.cr-name{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px}
+.cr-meta-num{font-size:12px;font-weight:700;color:#22d3ee;margin-bottom:1px}
+.cr-meta-lbl{font-size:8px;color:rgba(255,255,255,.25);margin-bottom:5px}
+.cr-real-num{font-size:18px;font-weight:800;color:#fff;margin-bottom:1px}
+.cr-real-lbl{font-size:8px;color:rgba(255,255,255,.35);margin-bottom:6px}
+.cr-bar{height:3px;background:#1a2e22;border-radius:2px;overflow:hidden;margin-bottom:5px}
+.cr-fill{height:100%;border-radius:2px}
+.cr-fill.pos{background:linear-gradient(90deg,#16a34a,#4ade80)}.cr-fill.neg{background:#334155}
+.cr-pp{font-size:10px;font-weight:700}
+.cr-pp.pos{color:#4ade80}.cr-pp.neg{color:#94a3b8}
+
+/* ── FOOTER ── */
+footer{flex-shrink:0;background:#081209;border-top:1px solid rgba(255,255,255,.06);padding:6px 28px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px}
+.footer-top{font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.04em}
+.footer-top span{color:rgba(255,255,255,.12)}
+.footer-bot{font-size:9px;color:rgba(255,255,255,.15);letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+
+/* ── LOADING ── */
+#loading{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0b1a10;z-index:999;gap:14px}
+.spinner{width:32px;height:32px;border:2px solid rgba(255,255,255,.08);border-top-color:#22c55e;border-radius:50%;animation:spin .7s linear infinite}
+#loading p{color:rgba(255,255,255,.25);font-size:12px;font-family:'Inter',sans-serif}
+#err{display:none;text-align:center;padding:60px;color:rgba(255,100,100,.7);font-size:13px}
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div><p>Carregando dados...</p></div>
+<div id="err"><p>Erro ao carregar. Verifique as URLs dos Apps Scripts.</p></div>
+<div id="app" style="display:none">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🏆</div>
+      <div class="logo-text">
+        <div class="t1">CAUP <span style="color:rgba(255,255,255,.3);font-weight:400;margin:0 4px">|</span> Capital Upgrade</div>
+        <div class="t2">🏆 Ranking Comercial · Fortaleza</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <span id="ts"></span>
+      <button id="btn-pause" class="hdr-btn" onclick="togglePause()">
+        <svg id="pause-icon" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        <span id="pause-label">Pausar</span>
+      </button>
+      <button id="btn-refresh" class="hdr-btn" onclick="manualRefresh()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+        Atualizar
+      </button>
+      <!-- Canal pill só visível no painel placar -->
+      <div id="canal-pill-wrap" class="canal-pill" style="display:none">
+        <button class="ctb on" onclick="setCanal('consolidado',this)">Consolidado</button>
+        <button class="ctb" onclick="setCanal('trafego',this)">Tráfego</button>
+        <button class="ctb" onclick="setCanal('trafego_ant',this)">Tráf. Ant.</button>
+        <button class="ctb" onclick="setCanal('base',this)">Base</button>
+        <button class="ctb" onclick="setCanal('base_ant',this)">Base Ant.</button>
+        <button class="ctb" onclick="setCanal('indicacao',this)">Indicação</button>
+      </div>
+    </div>
+  </header>
+  <div id="rotation-bar-wrap"><div id="rotation-bar"></div></div>
+
+  <nav class="main-tabs">
+    <button class="main-tab on"  onclick="swMain('placar',this)">Placar</button>
+    <button class="main-tab" onclick="swMain('closer',this)">Closers</button>
+    <button class="main-tab" onclick="swMain('sdr',this)">SDRs</button>
+  </nav>
+
+  <!-- PLACAR DE VENDAS -->
+  <div id="panel-placar" class="main-panel on">
+    <div class="placar-wrap">
+      <div id="placar-main" class="placar-main"></div>
+    </div>
+  </div>
+
+  <!-- CLOSERS -->
+  <div id="panel-closer" class="main-panel">
+    <div class="kpi-row" id="ck"></div>
+    <div class="rank-body">
+      <div class="prog-hdr" id="ph"></div>
+      <div class="bar-bg"><div id="pb" class="bar-fill"></div></div>
+      <div class="sec">Ranking · vendido no mês</div>
+      <div class="main-layout">
+        <div class="left-col">
+          <div class="pod-card"><div class="pod-title">Pódio</div><div id="cp"></div></div>
+          <div class="zonas" id="cz"></div>
+        </div>
+        <div class="table-wrap"><table id="ct"></table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SDRs -->
+  <div id="panel-sdr" class="main-panel">
+    <div class="kpi-row" id="sk"></div>
+    <div class="rank-body">
+      <div class="subtabs">
+        <button class="subtab on" onclick="swSdr('vendas',this)">Vendas</button>
+        <button class="subtab" onclick="swSdr('agend',this)">Agendamentos</button>
+        <button class="subtab" onclick="swSdr('show',this)">Shows</button>
+      </div>
+      <div id="sp-vendas" class="subpanel on">
+        <div class="prog-hdr" id="sph-v"></div>
+        <div class="bar-bg"><div id="spb-v" class="bar-fill"></div></div>
+        <div class="sec">Ranking · valor vendido</div>
+        <div class="main-layout">
+          <div class="left-col"><div class="pod-card"><div class="pod-title">Pódio · Vendas</div><div id="sp-v"></div></div><div class="zonas" id="sz-v"></div></div>
+          <div class="table-wrap"><table id="st-v"></table></div>
+        </div>
+      </div>
+      <div id="sp-agend" class="subpanel">
+        <div class="prog-hdr" id="sph-a"></div>
+        <div class="bar-bg"><div id="spb-a" class="bar-fill"></div></div>
+        <div class="sec">Ranking · agendamentos</div>
+        <div class="main-layout">
+          <div class="left-col"><div class="pod-card"><div class="pod-title">Pódio · Agendamentos</div><div id="sp-a"></div></div><div class="zonas" id="sz-a"></div></div>
+          <div class="table-wrap"><table id="st-a"></table></div>
+        </div>
+      </div>
+      <div id="sp-show" class="subpanel">
+        <div class="prog-hdr" id="sph-s"></div>
+        <div class="bar-bg"><div id="spb-s" class="bar-fill"></div></div>
+        <div class="sec">Ranking · shows</div>
+        <div class="main-layout">
+          <div class="left-col"><div class="pod-card"><div class="pod-title">Pódio · Shows</div><div id="sp-s"></div></div><div class="zonas" id="sz-s"></div></div>
+          <div class="table-wrap"><table id="st-s"></table></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-top"><span>·</span> Atualização automática a cada 5 minutos <span>·</span></div>
+    <div class="footer-bot">Claudio Catunda · Capital Upgrade</div>
+  </footer>
+</div>
+
+<script>
+// ── URLs ─────────────────────────────────────────────────────
+const URL_RANKING = 'https://script.google.com/macros/s/AKfycbx_8sFka3xdRJbPxVeXQ7wCYQwWs96xivveWAntBH6OuI_Gd7Mfj40TZSs3SWaLNvYS-w/exec';
+const URL_PLACAR  = 'https://script.google.com/macros/s/AKfycbzh_v_houxl6pPM6EukvHwRPissMeDgrIpyc15AM0kYhcyYoG7RRPLiSpmaXbZUg85R/exec';
+const PROXY = 'https://api.allorigins.win/get?url=';
+
+// ── FOTOS ────────────────────────────────────────────────────
+const FOTOS_CLOSER={
+  'Amanda Barata':    '1RbnRzJ8-OCoKIjIKbkDPYDvrtZcwviv9',
+  'Estrela Barbara':  '1odr6chRm0-W8aInNkrsYGiqDe3YgFsVq',
+  'Victória Wauanny': '1pEeK4MRnYKZMWpIeBifeEKOF64W2SGHC',
+  'Hadson Souza':     '1XyIidVERRN7KoBFnWvkyuvl6O4JIHMxP',
+  'Jarbas Teixeira':  '1CCqd2q47EPNJGFiGxzH200BsUdaG-46i',
+  'Gicelio Igor':     '1m_CJcKj2ndnSBSwtLzR17pqwfXy95FhZ',
+  'Patricia Macieira':'14CELa0wCtOPZWKy-UCthAr1024B0oJvo',
+  'Priscylla Silva':  '19R_ScPTWu0BXRMpEoIjEKyM-uz3N0OEC',
+  'Samara Almeida':   '16n8VxtNXoePVHw9jyYW_EIOrKyEKI19V',
+};
+const FOTOS_SDR={
+  'Ana Flávia Barbosa':   '1Gfg9fh9bqQ2yeRIi3sHAA32hV8aRe9Dj',
+  'Brena Pinheiro':       '1tsZZPE-v1LnOIGV_S3ACBCno-qUrD0Zk',
+  'Daiana Sousa':         '1v7U5mhk8SYJjHqV2pBb-6rxvy3tu8ob5',
+  'Guilherme Xavier':     '1qNjgjg9juvpt_BlaNfCJ4XQ45qLypwgn',
+  'Rene Matos':           '10QROcnTpLg0SWafViPVa53MVLm1JWLVR',
+  'Roberta Rocha':        '1-gmloYqTCN78Rd-9Xm3Q80VGHwqiDK0U',
+  'Sergio Vinicius':      '1IQWcbcfilZfSNDRgDmh1qXnTAIM8U4xo',
+  'Sthefany Vasconcelos': '11FBMdjWfOjg3Du2ktWMxjUmJPzY_ia9i',
+};
+
+// ── UTILS ────────────────────────────────────────────────────
+const BRL=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+const brl=v=>{const n=parseFloat(v);return isNaN(n)?'—':'R$ '+new Intl.NumberFormat('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0}).format(n)};
+const PCT=v=>(v*100).toFixed(1)+'%';
+const NUM=v=>Math.round(v).toLocaleString('pt-BR');
+const num=v=>parseFloat(String(v))||0;
+const rnd=v=>Math.round(num(v));
+const pctN=v=>{const n=num(v);return n<2?n*100:n};
+const pCls=p=>p>=90?'g':p>=60?'a':'s';
+const bCls=p=>p>=90?'g':p>=60?'a':'s';
+const pc=v=>v>=1?'g':v>=0.6?'a':'r';
+const ini=n=>{const p=n.trim().split(' ');return(p[0][0]+(p[1]?.[0]||'')).toUpperCase()};
+const fotoUrl=id=>`https://drive.google.com/thumbnail?id=${id}&sz=w200`;
+const findRows=lbl=>G?G.filter(r=>r.some(c=>String(c).trim()===lbl.trim())):[];
+
+let G=null, CANAL='consolidado', charts={};
+let rankingData=null;
+
+// ── CANAL (Placar) ────────────────────────────────────────────
+const COLS={
+  trafego:    {plan:11,proj:12,real:13,label:'Tráfego Pago'},
+  trafego_ant:{plan:null,proj:null,real:15,label:'Tráfego Ant.'},
+  base:       {plan:16,proj:17,real:18,label:'Base'},
+  base_ant:   {plan:null,proj:null,real:19,label:'Base Ant.'},
+  indicacao:  {plan:20,proj:21,real:22,label:'Indicação'},
+};
+function getVal(row,canal,tipo){
+  if(!row) return 0;
+  if(canal==='consolidado'){
+    if(tipo==='real') return [13,15,18,19,22].reduce((s,c)=>s+num(row[c]),0);
+    if(tipo==='proj') return [12,17,21].reduce((s,c)=>s+num(row[c]),0);
+    if(tipo==='plan') return [11,16,20].reduce((s,c)=>s+num(row[c]),0);
+  }
+  const c=COLS[canal]; if(!c) return 0;
+  if(tipo==='real') return c.real?num(row[c.real]):0;
+  if(tipo==='proj') return c.proj?num(row[c.proj]):0;
+  if(tipo==='plan') return c.plan?num(row[c.plan]):0;
+  return 0;
+}
+function setCanal(c,btn){
+  CANAL=c;
+  document.querySelectorAll('.ctb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderPlacar();
+}
+
+// ── ROTAÇÃO ──────────────────────────────────────────────────
+const ROTATION_INTERVAL=5000;
+const STEPS=[
+  {tab:'placar',sub:null},
+  {tab:'closer',sub:null},
+  {tab:'sdr',sub:'vendas'},
+  {tab:'sdr',sub:'agend'},
+  {tab:'sdr',sub:'show'},
+];
+let currentStep=0, rotationTimer=null, paused=false;
+
+function goToStep(idx){
+  const step=STEPS[idx];
+  document.querySelectorAll('.main-tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('on'));
+  const tabs=document.querySelectorAll('.main-tab');
+  const panelMap={placar:0,closer:1,sdr:2};
+  tabs[panelMap[step.tab]].classList.add('on');
+  document.getElementById('panel-'+step.tab).classList.add('on');
+  document.getElementById('canal-pill-wrap').style.display=step.tab==='placar'?'flex':'none';
+  if(step.tab==='sdr'){
+    document.querySelectorAll('.subtab').forEach(t=>t.classList.remove('on'));
+    document.querySelectorAll('.subpanel').forEach(p=>p.classList.remove('on'));
+    const subMap={vendas:0,agend:1,show:2};
+    document.querySelectorAll('.subtab')[subMap[step.sub]].classList.add('on');
+    document.getElementById('sp-'+step.sub).classList.add('on');
+  }
+}
+function startBar(){
+  const bar=document.getElementById('rotation-bar');
+  bar.style.transition='none';bar.style.width='0%';
+  bar.offsetWidth;
+  bar.style.transition=`width ${ROTATION_INTERVAL}ms linear`;
+  bar.style.width='100%';
+}
+function stopRotation(){
+  clearInterval(rotationTimer);rotationTimer=null;
+  const bar=document.getElementById('rotation-bar');
+  const w=getComputedStyle(bar).width;
+  bar.style.transition='none';bar.style.width=w;
+}
+function startRotation(){rotationTimer=setInterval(()=>{currentStep=(currentStep+1)%STEPS.length;goToStep(currentStep);startBar();},ROTATION_INTERVAL);startBar();}
+function togglePause(){
+  paused=!paused;
+  const icon=document.getElementById('pause-icon');
+  const label=document.getElementById('pause-label');
+  if(paused){stopRotation();icon.innerHTML='<polygon points="5,3 19,12 5,21"/>';label.textContent='Retomar';}
+  else{startRotation();icon.innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';label.textContent='Pausar';}
+}
+function swMain(name,btn){
+  if(!paused){stopRotation();startRotation();}
+  const idx=STEPS.findIndex(s=>s.tab===name&&s.sub===null);
+  if(idx>=0) currentStep=idx;
+  document.querySelectorAll('.main-tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('panel-'+name).classList.add('on');
+  document.getElementById('canal-pill-wrap').style.display=name==='placar'?'flex':'none';
+}
+function swSdr(name,btn){
+  if(!paused){stopRotation();startRotation();}
+  document.querySelectorAll('.subtab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.subpanel').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('sp-'+name).classList.add('on');
+}
+
+// ── PLACAR DE VENDAS ─────────────────────────────────────────
+function destroyCharts(){Object.values(charts).forEach(c=>{try{c.destroy()}catch(e){}});charts={}}
+function renderPlacar(){
+  if(!G) return;
+  destroyCharts();
+  document.getElementById('placar-main').innerHTML=buildKPIs()+buildSemanas()+buildFunil();
+}
+function buildKPIs(){
+  const meta=num(G[5][1]),pace=num(G[6][3]),realizado=num(G[6][4]),gap=num(G[6][6]);
+  const proposta=num(G[12][3]),tkmPlan=num(G[19][2]),tkmReal=num(G[19][3]),cancQtd=num(G[16][2]),cancBRL=num(G[16][3]);
+  const vRow=G[22],vdRow=G[18];
+  let canalReal,canalVendas;
+  if(CANAL==='consolidado'){canalReal=num(G[6][4]);canalVendas=num(G[18][23]);}
+  else if(CANAL==='trafego'){canalReal=num(vRow[13]);canalVendas=num(vdRow[13]);}
+  else if(CANAL==='trafego_ant'){canalReal=num(vRow[15]);canalVendas=num(vdRow[15]);}
+  else if(CANAL==='base'){canalReal=num(vRow[18]);canalVendas=num(vdRow[18]);}
+  else if(CANAL==='base_ant'){canalReal=num(vRow[19]);canalVendas=num(vdRow[19]);}
+  else if(CANAL==='indicacao'){canalReal=num(vRow[22]);canalVendas=num(vdRow[22]);}
+  else{canalReal=num(G[6][4]);canalVendas=0;}
+  const canalTKM=canalVendas>0?canalReal/canalVendas:null;
+  const cLabel=CANAL==='consolidado'?'no Mês':COLS[CANAL]?.label||'Canal';
+  const pReal=meta>0?Math.round((canalReal/meta)*100):0;
+  const pPace=meta>0?Math.round((pace/meta)*100):0;
+  const pc2=pCls(pReal);
+  return `
+  <div class="sec-hdr"><span class="sec-lbl">Visão Geral</span><div class="sec-line"></div></div>
+  <div class="kpi-hero">
+    <div class="card-realizado">
+      <div class="klbl">Realizado ${cLabel}</div>
+      <div class="kval hero-val">${brl(canalReal)}</div>
+      <div class="prog-wrap">
+        <div class="prog-info"><span class="pi-label">Atingimento</span><span class="pi-val ${pc2}">${pReal}%</span></div>
+        <div class="pbar" style="margin-bottom:5px"><div class="pfill g" style="width:${Math.min(pReal,100)}%"></div></div>
+        <div style="font-size:9px;color:rgba(255,255,255,.3)">Falta: <span style="color:rgba(255,255,255,.55);font-weight:600">${brl(meta-canalReal)}</span></div>
+      </div>
+    </div>
+    <div class="card-kpi meta"><div class="klbl">Meta do Mês</div><div class="kval meta-val">${brl(meta)}</div><div class="ksub">Objetivo de faturamento</div></div>
+    <div class="card-kpi pace"><div class="klbl">Pace Necessário</div><div class="kval">${brl(pace)}</div><div class="pbar" style="margin-top:10px"><div class="pfill s" style="width:${Math.min(pPace,100)}%"></div></div><div class="ksub" style="margin-top:4px">Deveria ter hoje</div></div>
+    <div class="card-kpi gap"><div class="klbl">GAP do Pace</div><div class="kval">${CANAL==='consolidado'?brl(gap):'—'}</div><div class="ksub">Pace − Realizado</div></div>
+  </div>
+  <div class="kpi-sec">
+    <div class="card-sec proposta"><div class="klbl">Proposta na Rua</div><div class="kval">${brl(proposta)}</div><div class="ksub">Negociações em aberto</div></div>
+    <div class="card-sec tkm"><div class="klbl">TKM — ${cLabel}</div><div class="kval">${canalTKM!==null?brl(canalTKM):'—'}</div><div class="ksub">Global: ${brl(tkmReal)} · Plan: ${brl(tkmPlan)}</div></div>
+    <div class="card-sec cancel"><div class="klbl">Cancelamentos</div><div class="kval">${brl(cancBRL)}</div><div class="ksub">${cancQtd} venda${cancQtd!==1?'s':''} cancelada${cancQtd!==1?'s':''}</div></div>
+  </div>`;
+}
+function buildSemanas(){
+  const semRows=[G[8],G[9],G[10],G[11]];
+  const vCols=[10,13,16,19];
+  const sv=(lbl,i)=>{const r=findRows(lbl);return r[0]?num(r[0][vCols[i]]):0};
+  const semCls=['s1','s2','s3','s4'];
+  const cards=semRows.map((row,i)=>{
+    const plan=num(row[3]),proj=num(row[4]),real=num(row[5]);
+    const vqtd=sv('VENDAS REALIZADAS SEMANA',i),mqtd=sv('META VENDAS SEMANA',i);
+    const p=proj>0?Math.min((real/proj)*100,100):0;
+    return `<div class="sem-card ${semCls[i]}">
+      <div class="sem-top"><span class="sem-title">Semana ${i+1}</span><span class="sem-pct">${p.toFixed(0)}%</span></div>
+      <div class="sem-trio">
+        <div class="sem-col col-plan"><div class="sem-col-l">Plan.</div><div class="sem-col-v">${brl(plan)}</div></div>
+        <div class="sem-col col-proj"><div class="sem-col-l">Proj.</div><div class="sem-col-v">${brl(proj)}</div></div>
+        <div class="sem-col col-real"><div class="sem-col-l">Real.</div><div class="sem-col-v">${brl(real)}</div></div>
+      </div>
+      <div class="sem-bar"><div class="sem-fill" style="background:linear-gradient(90deg,#16a34a,#22c55e);width:${p.toFixed(1)}%"></div></div>
+      <div class="sem-foot">Vendas: <strong>${rnd(vqtd)}</strong> / ${rnd(mqtd)}</div>
+    </div>`;
+  }).join('');
+  return `<div class="sec-hdr"><span class="sec-lbl">Resultado por Semana</span><div class="sec-line"></div></div><div class="semanas">${cards}</div>`;
+}
+function buildFunil(){
+  const cLabel=CANAL==='consolidado'?'Consolidado':COLS[CANAL]?.label||'';
+  const fRows=[{label:'Leads',ri:5},{label:'Conectados',ri:6},{label:'Agendados',ri:10},{label:'Shows',ri:14},{label:'Vendas',ri:18}];
+  const crDef=[{name:'CR1',riReal:7,riMeta:8},{name:'CR2',riReal:11,riMeta:12},{name:'CR3',riReal:15,riMeta:16},{name:'CR4',riReal:19,riMeta:20},{name:'Hit Rate',riReal:-1,riMeta:-1}];
+  const hitRateRow=G.findIndex(r=>r.some(c=>String(c).trim()==='Hit Rate'));
+  const hitMetaRow=hitRateRow>=0?hitRateRow+1:-1;
+  const hasProj=CANAL!=='trafego_ant'&&CANAL!=='base_ant';
+  const gcols=hasProj?'1.8fr .7fr .7fr .7fr .55fr .45fr':'1.8fr .7fr .55fr .45fr';
+  const fd=fRows.map(r=>{
+    const row=G[r.ri];
+    const plan=getVal(row,CANAL,'plan'),proj=getVal(row,CANAL,'proj'),real=getVal(row,CANAL,'real');
+    const gap=real-proj,pct=proj>0?Math.round((real/proj)*100):null;
+    return {label:r.label,plan,proj,real,gap,pct};
+  });
+  const crD=crDef.map(c=>{
+    const ri=c.riReal===-1?hitRateRow:c.riReal,riM=c.riMeta===-1?hitMetaRow:c.riMeta;
+    const rr=ri>=0?G[ri]:null,rm=riM>=0?G[riM]:null;
+    const col=CANAL==='consolidado'?23:(COLS[CANAL]?.real||13);
+    const real2=rr?pctN(rr[col]):0,meta2=rm?pctN(rm[col]):null;
+    const pp=meta2!==null?(real2-meta2).toFixed(1):null;
+    return{name:c.name,real:real2.toFixed(1),meta:meta2!==null?meta2.toFixed(1):null,pp};
+  });
+  const tableRows=fd.map(r=>{
+    const gc=r.gap>=0?'pos':'neg',bc2=r.pct!==null?bCls(r.pct):'s';
+    if(!hasProj) return `<div class="frow" style="grid-template-columns:${gcols}"><span class="fc">${r.label}</span><span class="fc">${rnd(r.real)}</span><span class="fc ${gc}">${r.gap>=0?'+':''}${rnd(r.gap)}</span><span><span class="badge2 ${bc2}">${r.pct!==null?r.pct+'%':'—'}</span></span></div>`;
+    return `<div class="frow" style="grid-template-columns:${gcols}"><span class="fc">${r.label}</span><span class="fc dim">${rnd(r.plan)}</span><span class="fc proj">${rnd(r.proj)}</span><span class="fc">${rnd(r.real)}</span><span class="fc ${gc}">${r.gap>=0?'+':''}${rnd(r.gap)}</span><span><span class="badge2 ${bc2}">${r.pct!==null?r.pct+'%':'—'}</span></span></div>`;
+  }).join('');
+  const crCards=crD.map(c=>{
+    const ppN=c.pp!==null?parseFloat(c.pp):null,ppCls=ppN!==null?(ppN>=0?'pos':'neg'):'';
+    const fill=c.meta!==null?Math.min((parseFloat(c.real)/parseFloat(c.meta))*100,100):50;
+    return `<div class="cr-card"><div class="cr-name">${c.name}</div>${c.meta!==null?`<div class="cr-meta-num">${c.meta}%</div><div class="cr-meta-lbl">Meta</div>`:'<div style="height:28px"></div>'}<div class="cr-real-num">${c.real}%</div><div class="cr-real-lbl">Realizado</div><div class="cr-bar"><div class="cr-fill ${ppCls}" style="width:${fill}%"></div></div>${ppN!==null?`<div class="cr-pp ${ppCls}">${ppN>=0?'+':''}${c.pp} p.p.</div>`:'<div class="cr-pp" style="color:rgba(255,255,255,.2)">—</div>'}</div>`;
+  }).join('');
+  const fLabels=fd.map(r=>r.label),fPlan=fd.map(r=>r.plan||null),fProj=fd.map(r=>r.proj||null),fReal2=fd.map(r=>r.real||null);
+  const crLabels=crD.map(c=>c.name),crMeta=crD.map(c=>c.meta!==null?parseFloat(c.meta):null),crReal=crD.map(c=>parseFloat(c.real));
+  setTimeout(()=>{
+    const fc=document.getElementById('cf');
+    if(fc){if(charts.f)charts.f.destroy();charts.f=new Chart(fc,{type:'bar',data:{labels:fLabels,datasets:[{label:'Planejado',data:fPlan,backgroundColor:'rgba(148,163,184,.12)',borderRadius:4,borderSkipped:false},{label:'Projetado',data:fProj,backgroundColor:'rgba(45,212,191,.22)',borderRadius:4,borderSkipped:false},{label:'Realizado',data:fReal2,backgroundColor:'rgba(34,197,94,.65)',borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'rgba(255,255,255,.4)',font:{size:10},boxWidth:8,padding:12}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${new Intl.NumberFormat('pt-BR').format(c.parsed.y)}`}}},scales:{x:{ticks:{color:'rgba(255,255,255,.3)',font:{size:9}},grid:{color:'rgba(255,255,255,.03)'}},y:{ticks:{color:'rgba(255,255,255,.3)',font:{size:9}},grid:{color:'rgba(255,255,255,.03)'},beginAtZero:true}},animation:{duration:300}}});}
+    const cc=document.getElementById('cc');
+    if(cc){if(charts.c)charts.c.destroy();charts.c=new Chart(cc,{type:'bar',data:{labels:crLabels,datasets:[{label:'Meta (%)',data:crMeta,backgroundColor:'rgba(45,212,191,.2)',borderRadius:4,borderSkipped:false},{label:'Realizado (%)',data:crReal,backgroundColor:'rgba(34,197,94,.65)',borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'rgba(255,255,255,.4)',font:{size:10},boxWidth:8,padding:12}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y}%`}}},scales:{x:{ticks:{color:'rgba(255,255,255,.3)',font:{size:9}},grid:{color:'rgba(255,255,255,.03)'}},y:{ticks:{color:'rgba(255,255,255,.3)',font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.03)'},beginAtZero:true}},animation:{duration:300}}});}
+  },60);
+  return `<div class="sec-hdr"><span class="sec-lbl">Funil — ${cLabel}</span><div class="sec-line"></div></div><div class="funil-layout"><div class="box"><div class="box-title">Funil de Conversão</div><div class="box-sub">Planejado · Projetado · Realizado</div><div class="chart-wrap"><canvas id="cf"></canvas></div><div class="ftable"><div class="frow" style="grid-template-columns:${gcols}"><span class="fc hd">Etapa</span>${hasProj?'<span class="fc hd">Plan.</span><span class="fc hd">Proj.</span>':''}<span class="fc hd">Real.</span><span class="fc hd">GAP</span><span class="fc hd">%</span></div>${tableRows}</div></div><div class="box"><div class="box-title">Taxas de Conversão</div><div class="box-sub">CR1 → CR4 · Hit Rate — Meta vs Realizado</div><div class="chart-wrap"><canvas id="cc"></canvas></div><div class="cr-grid">${crCards}</div></div></div>`;
+}
+
+// ── RANKING (Closers / SDRs) ──────────────────────────────────
+function avHtml(nome,fotos){
+  const fid=fotos[nome];
+  if(fid) return `<img src="${fotoUrl(fid)}" alt="${ini(nome)}" onerror="this.outerHTML='<span>${ini(nome)}</span>'">`;
+  return ini(nome);
+}
+function podium(top3,fotos,mk,metaK,lbl){
+  const ord=[{i:1,cls:'s'},{i:0,cls:'f'},{i:2,cls:'t'}];
+  const bases=['2º','1º','3º'];
+  return '<div class="podium">'+ord.map(({i,cls},oi)=>{
+    const p=top3[i];if(!p) return `<div class="ps ${cls}"></div>`;
+    const val=p[mk]||0,meta=p[metaK]||1,pct=val/meta;
+    const nome=p.nome.split(' ').slice(0,2).join('<br>');
+    return`<div class="ps ${cls}"><div class="av">${avHtml(p.nome,fotos)}</div><div class="pn">${nome}</div><div class="pv">${lbl(val)}</div><div class="pp"><span class="pct-lbl">${PCT(pct)}</span></div><div class="pb">${bases[oi]}</div></div>`;
+  }).join('')+'</div>';
+}
+function zonas(ranking,fotos,mk,metaK,lbl){
+  const super_=ranking.filter(p=>p[metaK]>0&&p[mk]/p[metaK]>=1.30);
+  const meta_=ranking.filter(p=>p[metaK]>0&&p[mk]/p[metaK]>=1.00&&p[mk]/p[metaK]<1.30);
+  function chip(p){
+    const fid=fotos[p.nome];
+    const inner=fid?`<img src="${fotoUrl(fid)}" alt="${ini(p.nome)}" onerror="this.outerHTML='${ini(p.nome)}'">`:`${ini(p.nome)}`;
+    const val=p[mk]||0,meta=p[metaK]||1;
+    return`<div class="zona-chip"><div class="zona-av">${inner}</div><div class="zona-info"><div class="zona-nome">${p.nome.split(' ').slice(0,2).join(' ')}</div><div class="zona-val">${lbl(val)} · ${PCT(val/meta)}</div></div></div>`;
+  }
+  return`
+    <div class="zona-card super-zone"><div class="zona-header"><span class="zona-badge">Super Meta ≥ 130%</span><span class="zona-sub">${super_.length} pessoa${super_.length!==1?'s':''}</span></div><div class="zona-pessoas">${super_.length?super_.map(chip).join(''):'<div class="zona-empty">Nenhum ainda</div>'}</div></div>
+    <div class="zona-card"><div class="zona-header"><span class="zona-badge">Meta 100–129%</span><span class="zona-sub">${meta_.length} pessoa${meta_.length!==1?'s':''}</span></div><div class="zona-pessoas">${meta_.length?meta_.map(chip).join(''):'<div class="zona-empty">Nenhum ainda</div>'}</div></div>`;
+}
+function renderCloser(c){
+  const gp=c.gap>0;
+  const pctV=(c.pctMeta*100).toFixed(1),barV=Math.min(c.pctMeta,1)*100,falta=c.meta-c.vendido;
+  document.getElementById('ck').innerHTML=`
+    <div class="kpi"><div class="kpi-l">Meta do Time</div><div class="kpi-v">${BRL(c.meta)}</div><div style="margin-top:18px"></div><div class="kpi-s">Objetivo de faturamento</div></div>
+    <div class="kpi"><div class="kpi-l">Valor Vendido</div><div class="kpi-v accent">${BRL(c.vendido)}</div><div class="kpi-bar-row"><span class="kpi-bar-label">Atingimento</span><span class="kpi-bar-pct">${pctV}%</span></div><div class="kpi-bar-bg"><div class="kpi-bar-fill" style="width:${barV.toFixed(1)}%"></div></div><div class="kpi-s ${falta>0?'red':''}">Falta: ${BRL(Math.max(falta,0))}</div></div>
+    <div class="kpi"><div class="kpi-l">Pace Necessário</div><div class="kpi-v">${BRL(c.pace)}</div><div class="kpi-bar-row"><span class="kpi-bar-label">&nbsp;</span></div><div class="kpi-bar-bg"><div class="kpi-bar-fill" style="width:${Math.min(c.vendido/c.pace,1)*100}%;background:rgba(255,255,255,.3)"></div></div><div class="kpi-s">Deveria ter hoje</div></div>
+    <div class="kpi"><div class="kpi-l">GAP do Pace</div><div class="kpi-v" style="color:${gp?'#f87171':'#22c55e'}">${BRL(Math.abs(c.pace-c.vendido))}</div><div style="margin-top:18px"></div><div class="kpi-s">${gp?'Falta para o pace':'No pace ✓'}</div></div>`;
+  const pv=Math.min(c.pctMeta,1);
+  document.getElementById('ph').innerHTML=`<span>Progresso da meta</span><span>${PCT(c.pctMeta)}</span>`;
+  document.getElementById('pb').style.width=`${(pv*100).toFixed(1)}%`;
+  document.getElementById('cp').innerHTML=podium(c.ranking.slice(0,3),FOTOS_CLOSER,'vendido','meta',BRL);
+  document.getElementById('cz').innerHTML=zonas(c.ranking,FOTOS_CLOSER,'vendido','meta',BRL);
+  const maxV=c.ranking[0]?.vendido||1;
+  document.getElementById('ct').innerHTML=`
+    <thead><tr><th style="text-align:left">Closer</th><th style="text-align:left">Vendido</th><th>% Meta</th><th>Meta</th><th>GAP Pace</th></tr></thead>
+    <tbody>${c.ranking.map((p,i)=>{
+      const b=Math.min(p.vendido/maxV,1);
+      return`<tr><td><span class="rp">${i+1}</span>${p.nome}</td><td><div class="mb"><div class="mb-bg"><div class="mb-fill" style="width:${(b*100).toFixed(1)}%"></div></div>${BRL(p.vendido)}</div></td><td><span class="pill ${pc(p.pctMeta)}">${PCT(p.pctMeta)}</span></td><td>${BRL(p.meta)}</td><td style="color:${p.vendido>=p.pace?'#22c55e':'#f87171'}">${BRL(Math.abs(p.pace-p.vendido))}</td></tr>`;
+    }).join('')}</tbody>`;
+}
+function renderSdr(s){
+  const pctV2=(s.pctMeta*100).toFixed(1),barV2=Math.min(s.pctMeta,1)*100,faltaV=s.metaVendas-s.realizado;
+  const pctA=(s.pctAgend*100).toFixed(1),barA=Math.min(s.pctAgend,1)*100;
+  const pctS=(s.pctShow*100).toFixed(1),barS=Math.min(s.pctShow,1)*100;
+  document.getElementById('sk').innerHTML=`
+    <div class="kpi"><div class="kpi-l">Meta do Time</div><div class="kpi-v">${BRL(s.metaVendas)}</div><div style="margin-top:18px"></div><div class="kpi-s">Objetivo de faturamento</div></div>
+    <div class="kpi"><div class="kpi-l">Valor Vendido</div><div class="kpi-v accent">${BRL(s.realizado)}</div><div class="kpi-bar-row"><span class="kpi-bar-label">Atingimento</span><span class="kpi-bar-pct">${pctV2}%</span></div><div class="kpi-bar-bg"><div class="kpi-bar-fill" style="width:${barV2.toFixed(1)}%"></div></div><div class="kpi-s ${faltaV>0?'red':''}">Falta: ${BRL(Math.max(faltaV,0))}</div></div>
+    <div class="kpi"><div class="kpi-l">Agendamentos</div><div class="kpi-v">${NUM(s.agendTotal)}</div><div class="kpi-bar-row"><span class="kpi-bar-label">Atingimento</span><span class="kpi-bar-pct">${pctA}%</span></div><div class="kpi-bar-bg"><div class="kpi-bar-fill" style="width:${barA.toFixed(1)}%"></div></div><div class="kpi-s">Meta: ${NUM(s.metaAgend)}</div></div>
+    <div class="kpi"><div class="kpi-l">Shows</div><div class="kpi-v">${NUM(s.showTotal)}</div><div class="kpi-bar-row"><span class="kpi-bar-label">Atingimento</span><span class="kpi-bar-pct">${pctS}%</span></div><div class="kpi-bar-bg"><div class="kpi-bar-fill" style="width:${barS.toFixed(1)}%"></div></div><div class="kpi-s">Meta: ${NUM(s.metaShow)}</div></div>`;
+  document.getElementById('sp-v').innerHTML=podium(s.ranking.slice(0,3),FOTOS_SDR,'realizado','metaVendas',BRL);
+  document.getElementById('sz-v').innerHTML=zonas(s.ranking,FOTOS_SDR,'realizado','metaVendas',BRL);
+  document.getElementById('sph-v').innerHTML=`<span>Progresso da meta · vendas</span><span>${PCT(s.pctMeta)}</span>`;
+  document.getElementById('spb-v').style.width=`${Math.min(s.pctMeta,1)*100}%`;
+  const rankV=[...s.ranking].sort((a,b)=>b.realizado-a.realizado);
+  const maxV=rankV[0]?.realizado||1;
+  document.getElementById('st-v').innerHTML=`<thead><tr><th style="text-align:left">SDR</th><th style="text-align:left">Realizado</th><th>% Meta</th><th>Meta</th></tr></thead><tbody>${rankV.map((p,i)=>{const b=Math.min(p.realizado/maxV,1);return`<tr><td><span class="rp">${i+1}</span>${p.nome.split(' ').slice(0,2).join(' ')}</td><td><div class="mb"><div class="mb-bg"><div class="mb-fill" style="width:${(b*100).toFixed(1)}%"></div></div>${BRL(p.realizado)}</div></td><td><span class="pill ${pc(p.pctMetaVendas)}">${PCT(p.pctMetaVendas)}</span></td><td>${BRL(p.metaVendas)}</td></tr>`;}).join('')}</tbody>`;
+  const rankA=[...s.ranking].sort((a,b)=>b.agendTotal-a.agendTotal);
+  document.getElementById('sp-a').innerHTML=podium(rankA.slice(0,3),FOTOS_SDR,'agendTotal','metaAgend',NUM);
+  document.getElementById('sz-a').innerHTML=zonas(rankA,FOTOS_SDR,'agendTotal','metaAgend',NUM);
+  document.getElementById('sph-a').innerHTML=`<span>Progresso da meta · agendamentos</span><span>${PCT(s.pctAgend)}</span>`;
+  document.getElementById('spb-a').style.width=`${Math.min(s.pctAgend,1)*100}%`;
+  const maxA=rankA[0]?.agendTotal||1;
+  document.getElementById('st-a').innerHTML=`<thead><tr><th style="text-align:left">SDR</th><th style="text-align:left">Agendado</th><th>% Meta</th><th>Meta</th></tr></thead><tbody>${rankA.map((p,i)=>{const b=Math.min(p.agendTotal/maxA,1);return`<tr><td><span class="rp">${i+1}</span>${p.nome.split(' ').slice(0,2).join(' ')}</td><td><div class="mb"><div class="mb-bg"><div class="mb-fill" style="width:${(b*100).toFixed(1)}%"></div></div>${NUM(p.agendTotal)}</div></td><td><span class="pill ${pc(p.pctAgend)}">${PCT(p.pctAgend)}</span></td><td>${NUM(p.metaAgend)}</td></tr>`;}).join('')}</tbody>`;
+  const rankS=[...s.ranking].sort((a,b)=>b.showTotal-a.showTotal);
+  document.getElementById('sp-s').innerHTML=podium(rankS.slice(0,3),FOTOS_SDR,'showTotal','metaShow',NUM);
+  document.getElementById('sz-s').innerHTML=zonas(rankS,FOTOS_SDR,'showTotal','metaShow',NUM);
+  document.getElementById('sph-s').innerHTML=`<span>Progresso da meta · shows</span><span>${PCT(s.pctShow)}</span>`;
+  document.getElementById('spb-s').style.width=`${Math.min(s.pctShow,1)*100}%`;
+  const maxS=rankS[0]?.showTotal||1;
+  document.getElementById('st-s').innerHTML=`<thead><tr><th style="text-align:left">SDR</th><th style="text-align:left">Shows</th><th>% Meta</th><th>Meta</th></tr></thead><tbody>${rankS.map((p,i)=>{const b=Math.min(p.showTotal/maxS,1);return`<tr><td><span class="rp">${i+1}</span>${p.nome.split(' ').slice(0,2).join(' ')}</td><td><div class="mb"><div class="mb-bg"><div class="mb-fill" style="width:${(b*100).toFixed(1)}%"></div></div>${NUM(p.showTotal)}</div></td><td><span class="pill ${pc(p.pctShow)}">${PCT(p.pctShow)}</span></td><td>${NUM(p.metaShow)}</td></tr>`;}).join('')}</tbody>`;
+}
+
+// ── FETCH ────────────────────────────────────────────────────
+let loadedPlacar=false, loadedRanking=false;
+function checkAllLoaded(){
+  if(loadedPlacar&&loadedRanking){
+    document.getElementById('loading').style.display='none';
+    document.getElementById('app').style.display='block';
+    if(!rotationTimer&&!paused){goToStep(0);startRotation();}
+  }
+}
+async function loadPlacar(){
+  try{
+    let data;
+    try{const r=await fetch(URL_PLACAR);data=await r.json();}
+    catch(e){const r=await fetch(PROXY+encodeURIComponent(URL_PLACAR));const j=await r.json();data=JSON.parse(j.contents);}
+    G=typeof data.placar!=='undefined'?data.placar:data;
+    renderPlacar();
+    loadedPlacar=true;checkAllLoaded();
+  }catch(e){console.error('Placar error',e);loadedPlacar=true;checkAllLoaded();}
+}
+async function loadRanking(){
+  try{
+    const r=await fetch(URL_RANKING);
+    const data=await r.json();
+    renderCloser(data.closer);
+    renderSdr(data.sdr);
+    const ts=new Date(data.timestamp);
+    document.getElementById('ts').textContent='Atualizado às '+ts.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    loadedRanking=true;checkAllLoaded();
+  }catch(e){console.error('Ranking error',e);loadedRanking=true;checkAllLoaded();}
+}
+async function load(){await Promise.all([loadPlacar(),loadRanking()]);}
+async function manualRefresh(){
+  const btn=document.getElementById('btn-refresh');
+  btn.classList.add('loading');
+  await load();
+  btn.classList.remove('loading');
+}
+load();
+setInterval(load,5*60*1000);
+</script>
+</body>
+</html>
