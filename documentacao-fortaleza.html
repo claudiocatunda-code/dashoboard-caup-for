@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAUP · Documentação do Dashboard Fortaleza</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#0b1a10;color:#e8f5ee;line-height:1.6}
+.wrap{max-width:920px;margin:0 auto;padding:32px 24px 80px}
+header{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.logo-icon{width:36px;height:36px;border-radius:9px;background:#1a2e1f;border:1px solid #2d5c38;display:flex;align-items:center;justify-content:center;font-size:18px}
+h1{font-size:20px;font-weight:800;color:#fff}
+.subtitle{font-size:12px;color:#4ade80;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
+a.voltar{display:inline-block;margin:20px 0 30px;color:#4ade80;text-decoration:none;font-size:13px;font-weight:600}
+a.voltar:hover{text-decoration:underline}
+h2{font-size:16px;font-weight:800;color:#fff;margin:40px 0 14px;padding-bottom:8px;border-bottom:1px solid #1e3a28}
+h3{font-size:13px;font-weight:700;color:#4ade80;margin:22px 0 8px;text-transform:uppercase;letter-spacing:.04em}
+p{font-size:13.5px;color:rgba(255,255,255,.8);margin-bottom:10px}
+code{background:#111f16;border:1px solid #1e3a28;border-radius:4px;padding:1px 6px;font-size:12px;color:#facc15;font-family:'JetBrains Mono',Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0 20px;font-size:13px}
+th{background:#111f16;text-align:left;padding:8px 12px;color:rgba(255,255,255,.6);font-weight:700;font-size:11px;text-transform:uppercase;border-bottom:1px solid #1e3a28}
+td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.06);color:#e8f5ee}
+td.campo{font-weight:700;color:#fff;white-space:nowrap}
+.tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase}
+.tag.api{background:rgba(34,197,94,.15);color:#4ade80}
+.tag.planilha{background:rgba(96,165,250,.15);color:#60a5fa}
+.tag.calculado{background:rgba(245,158,11,.15);color:#f59e0b}
+.callout{background:#111f16;border-left:3px solid #4ade80;border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:13px;color:rgba(255,255,255,.85)}
+.callout.warn{border-left-color:#f59e0b}
+ul{margin:8px 0 14px 20px;font-size:13.5px;color:rgba(255,255,255,.8)}
+li{margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="logo-icon">📄</div>
+  <div>
+    <h1>Documentação do Dashboard Fortaleza</h1>
+    <div class="subtitle">Como cada número é calculado</div>
+  </div>
+</header>
+
+<a class="voltar" href="index.html">← Voltar ao dashboard</a>
+
+<p>Esta página explica de onde vem cada informação do dashboard e como cada cálculo é feito. Sempre que um campo vier <span class="tag api">API</span>, o valor é calculado ao vivo consultando a Ploomes no momento em que você abre o dashboard. Quando vier <span class="tag planilha">Planilha</span>, o valor depende de uma planilha externa preenchida manualmente pela equipe (Meta, Pace, Planejado). Quando vier <span class="tag calculado">Calculado</span>, é uma conta feita em cima de outros valores já buscados.</p>
+
+<div class="callout">
+  <strong>Seletor de período:</strong> as setas ◀ ▶ no topo do dashboard trocam o mês sendo exibido. Praticamente tudo recalcula ao vivo para o mês escolhido — exceto os KPIs da Visão Geral do Placar (Meta do Mês, Pace Necessário, Proposta na Rua, Ticket Médio Planejado, Cancelamentos), que vêm de uma planilha externa que só reflete o mês corrente.
+</div>
+
+<h2>Conceito central: Mês Atual x Mês Anterior (Safra)</h2>
+<p>Toda métrica de funil (Conexão, Agendamento, Show, Venda) é sempre olhada por duas lentes:</p>
+<ul>
+  <li><strong>Mês Atual (Safra):</strong> o lead <em>chegou</em> no mês selecionado, e acompanhamos o funil dele inteiro — mesmo que a etapa (ex: uma venda) só aconteça mais pra frente.</li>
+  <li><strong>Mês Anterior:</strong> o evento (conexão, agendamento, show, venda) <em>aconteceu</em> no mês selecionado, mas o lead é de uma safra anterior (chegou antes).</li>
+</ul>
+<p>Exemplo: em julho, um lead de tráfego pago que chegou em julho e já foi agendado conta como "Agendamento — Mês Atual". Um lead que chegou em junho e só foi agendado agora em julho conta como "Agendamento — Mês Anterior".</p>
+
+<h2>Aba Placar</h2>
+
+<h3>Visão Geral</h3>
+<table>
+<tr><th>Campo</th><th>Origem</th><th>Como é calculado</th></tr>
+<tr><td class="campo">Realizado no Mês</td><td><span class="tag api">API</span></td><td>Soma do <code>Amount</code> de todos os negócios ganhos (Status = Ganho) no funil Closer, com data de fechamento dentro do mês selecionado.</td></tr>
+<tr><td class="campo">Meta do Mês</td><td><span class="tag planilha">Planilha</span></td><td>Célula fixa na planilha "PLACAR DE VENDAS FORTALEZA" (aba do mês). Só reflete o mês corrente.</td></tr>
+<tr><td class="campo">Pace Necessário</td><td><span class="tag planilha">Planilha</span></td><td>Quanto a planilha calcula que você já deveria ter faturado até hoje, considerando dias úteis do mês. Só reflete o mês corrente.</td></tr>
+<tr><td class="campo">GAP do Pace</td><td><span class="tag calculado">Calculado</span></td><td><code>Pace − Realizado</code>. Verde se Realizado ≥ Pace, vermelho se está atrás.</td></tr>
+<tr><td class="campo">Proposta na Rua</td><td><span class="tag planilha">Planilha</span></td><td>Valor de negociações em aberto, preenchido manualmente na planilha.</td></tr>
+<tr><td class="campo">Ticket Médio</td><td><span class="tag calculado">Calculado</span></td><td><code>Faturamento ÷ Quantidade de Vendas</code> do mês selecionado (via API).</td></tr>
+<tr><td class="campo">Cancelamentos</td><td><span class="tag planilha">Planilha</span></td><td>Preenchido manualmente na planilha.</td></tr>
+</table>
+
+<h3>Funil — no Mês</h3>
+<p>Cada etapa (Leads, Conexão, Agendamento, Reunião, Venda) mostra o número do mês selecionado (via API) e uma barra comparando com Meta/Pace vindos do Consolidado da aba Canais.</p>
+<table>
+<tr><th>Etapa</th><th>Como é contada (API)</th></tr>
+<tr><td class="campo">Leads</td><td>Negócios criados no funil SDR dentro do período.</td></tr>
+<tr><td class="campo">Conexão</td><td>Negócios do funil SDR com o campo customizado "Data de entrada em diagnóstico SDR" preenchido dentro do período.</td></tr>
+<tr><td class="campo">Agendamento</td><td>Negócios do funil SDR com o campo "Data de entrada em apresentação SDR" preenchido dentro do período.</td></tr>
+<tr><td class="campo">Reunião (Show)</td><td>Negócios que entraram no funil Closer dentro do período (a entrada no Closer é o que caracteriza a reunião em Fortaleza).</td></tr>
+<tr><td class="campo">Venda</td><td>Negócios com Status = Ganho no funil Closer, com data de fechamento dentro do período.</td></tr>
+</table>
+
+<h3>Resultado por Semana</h3>
+<p>O mês é dividido em até 4 blocos de "semana", usando semanas de calendário reais (domingo a sábado), com uma regra de fusão pra sempre fechar em exatamente 4 blocos:</p>
+<ul>
+  <li>Enquanto sobrar mais de 4 blocos, olhamos a <strong>última semana</strong> do mês.</li>
+  <li>Se ela já tiver <strong>5 dias úteis</strong> (semana completa, segunda a sexta), fundimos as <strong>duas primeiras</strong> semanas em uma só.</li>
+  <li>Se ela estiver <strong>quebrada</strong> (menos de 5 dias úteis), fundimos as <strong>duas últimas</strong>.</li>
+</ul>
+<p>Cada card mostra Planejado/Projetado (de uma tabela específica na planilha externa, por semana) e Realizado (via API, no mesmo critério de contagem da tabela acima).</p>
+
+<h2>Aba Canais</h2>
+
+<h3>Sub-aba Funil</h3>
+<p>Mesma lógica de Mês Atual x Mês Anterior, mas separada por canal: <strong>Tráfego Pago</strong>, <strong>Base</strong> e <strong>Indicação</strong> — identificados pelo campo "Origem" nativo da Ploomes. O card <strong>Consolidado</strong> soma os 3 canais.</p>
+<table>
+<tr><th>Coluna</th><th>Origem</th><th>Significado</th></tr>
+<tr><td class="campo">Planejado</td><td><span class="tag planilha">Planilha</span></td><td>Meta definida manualmente, lida de uma planilha externa ("Performance Canais"). Só existe pra Tráfego Pago e Consolidado — Base e Indicação ficam sem meta definida.</td></tr>
+<tr><td class="campo">Projetado</td><td><span class="tag planilha">Planilha</span></td><td>Mesma fonte do Planejado.</td></tr>
+<tr><td class="campo">Mês Atual / Mês Anterior</td><td><span class="tag api">API</span></td><td>Ver seção "Conceito central" no topo desta página.</td></tr>
+<tr><td class="campo">CR1, CR2, CR3, CR4</td><td><span class="tag calculado">Calculado</span></td><td>Taxas de conversão entre etapas (Conexão/Leads, Agendamento/Conexão, Show/Agendamento, Venda/Show), calculadas separadamente para Mês Atual, Mês Anterior e Total.</td></tr>
+<tr><td class="campo">Meta CR</td><td><span class="tag planilha">Planilha</span></td><td>Meta de conversão fixa (50%/35%/75%/20%) — só definida pra Tráfego Pago e Consolidado.</td></tr>
+<tr><td class="campo">Hit Rate</td><td><span class="tag calculado">Calculado</span></td><td>Venda ÷ Leads.</td></tr>
+</table>
+
+<div class="callout">
+  <strong>Gráficos (barras e pizza):</strong> usam os mesmos números do Total (Mês Atual + Mês Anterior) desta tabela, comparando os 3 canais.
+</div>
+
+<h3>Sub-aba Time</h3>
+<p><strong>SDR:</strong> um card por pessoa, mostrando Leads, Conexão, Agendamento, Show e Venda — cada um por canal, com Mês Atual em destaque e Mês Anterior em texto pequeno. Show e Venda são atribuídos ao SDR original através do <code>ContactId</code> (já que essas etapas acontecem no funil do Closer, não no do SDR).</p>
+<p><strong>Vendedores:</strong> tabela com o valor vendido (R$) por canal e por Mês Atual/Mês Anterior, atribuído ao vendedor através do campo customizado "Vendedor" no negócio (ou o dono do negócio, se esse campo estiver vazio).</p>
+
+<h2>Aba Closers / SDRs</h2>
+<p>Cada aba tem 3 (Closer) ou 4 (SDR) sub-abas: <strong>Vendas</strong> (com pódio — é a métrica que "vale a pena celebrar"), <strong>Agendamentos</strong> e <strong>Shows</strong> (sem pódio nos Closers — aqui o que importa é só saber quem está ou não no pace), e <strong>Ligações</strong> (só em SDR).</p>
+
+<table>
+<tr><th>Campo</th><th>Origem</th><th>Como é calculado</th></tr>
+<tr><td class="campo">Meta, Pace</td><td><span class="tag planilha">Planilha</span></td><td>Vem de uma planilha externa de Meta/Pace por pessoa, atualizada pela liderança. Só reflete o mês corrente daquela planilha — meses passados/futuros podem não ter esses valores preenchidos.</td></tr>
+<tr><td class="campo">Realizado</td><td><span class="tag api">API</span></td><td>Contagem/soma via Ploomes, no período selecionado.</td></tr>
+<tr><td class="campo">GAP Pace</td><td><span class="tag calculado">Calculado</span></td><td><code>Realizado − Pace</code>.</td></tr>
+<tr><td class="campo">Status</td><td><span class="tag calculado">Calculado</span></td><td>"No pace" se Realizado ≥ Pace, "Abaixo" caso contrário. "—" se não há Pace definido.</td></tr>
+</table>
+
+<h3>Ligações (dentro de SDR)</h3>
+<p>Vem de uma integração com a <strong>API4com</strong> (sistema de telefonia). Toda vez que uma ligação termina, a API4com avisa nosso sistema via webhook, que grava ramal, duração e se foi atendida. Depois cruzamos o ramal com o nome do SDR numa tabela de mapeamento.</p>
+<ul>
+  <li><strong>Hoje / Semana:</strong> só aparecem com dado real quando o período selecionado é o mês corrente (não faz sentido "hoje" num mês passado).</li>
+  <li><strong>Mês:</strong> sempre reflete o mês selecionado no seletor de período.</li>
+</ul>
+
+<h2>Limitações conhecidas</h2>
+<ul>
+  <li>Os KPIs da Visão Geral do Placar (Meta, Pace, Proposta na Rua, Cancelamentos) só refletem o mês corrente, independente do período selecionado — eles vêm de uma planilha que não foi desenhada pra navegação histórica.</li>
+  <li>Meta/Pace do Ranking (Closers/SDRs) e do Canais dependem de planilhas externas preenchidas manualmente mês a mês — se um mês não tiver sido preenchido, o campo aparece zerado.</li>
+  <li>Vendas atribuídas a um SDR/Closer sem histórico de negócio no funil anterior (ex: entrou direto no Closer) aparecem sem atribuição de origem/SDR.</li>
+</ul>
+
+</div>
+</body>
+</html>
