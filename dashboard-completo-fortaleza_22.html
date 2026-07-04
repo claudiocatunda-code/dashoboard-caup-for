@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAUP · Ranking Comercial Fortaleza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',sans-serif;background:#0b1a10;color:#fff;font-size:13px}
+#app{display:flex;flex-direction:column;min-height:100vh}
+
+header{position:sticky;top:0;z-index:100;background:#081209;border-bottom:1px solid rgba(255,255,255,.15);padding:9px 28px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-icon{width:36px;height:36px;border-radius:9px;background:#1a2e1f;border:1px solid #2d5c38;display:flex;align-items:center;justify-content:center;font-size:18px;overflow:hidden}
+.logo-text .t1{font-size:14px;font-weight:800}
+.logo-text .t2{font-size:10px;color:#4ade80;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-top:2px}
+#ts{font-size:11px;color:rgba(255,255,255,.7)}
+.hdr-btn{display:flex;align-items:center;gap:5px;padding:5px 13px;border-radius:6px;background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s}
+.hdr-btn:hover{border-color:#4ade80;color:#4ade80;background:rgba(34,197,94,.08)}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.periodo-nav{display:flex;align-items:center;gap:6px;background:#0d2116;border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:4px 6px;margin-right:8px}
+.periodo-btn{background:transparent;border:none;color:#4ade80;font-size:13px;font-weight:800;cursor:pointer;padding:2px 6px;border-radius:4px;transition:background .12s}
+.periodo-btn:hover{background:rgba(34,197,94,.15)}
+.periodo-btn:disabled{color:rgba(255,255,255,.25);cursor:not-allowed}
+.periodo-label{font-size:12px;font-weight:700;color:#fff;min-width:110px;text-align:center;text-transform:capitalize}
+
+.main-tabs{display:flex;gap:2px;padding:10px 28px 0;border-bottom:1px solid rgba(255,255,255,.12);position:sticky;top:56px;z-index:99;background:#0b1a10}
+.main-tab{padding:6px 20px;border:1px solid transparent;border-bottom:none;border-radius:8px 8px 0 0;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;color:rgba(255,255,255,.65);background:transparent;transition:all .12s}
+.main-tab.on{background:#0f2017;color:#fff;border-color:rgba(255,255,255,.15);border-bottom-color:#0b1a10;margin-bottom:-1px}
+.main-panel{display:none;flex:1;flex-direction:column}
+.main-panel.on{display:flex}
+
+/* ===== PLACAR ===== */
+.placar-main{padding:20px 28px;display:flex;flex-direction:column;gap:20px}
+.sec-hdr{display:flex;align-items:center;gap:12px;margin-bottom:2px}
+.podio-toggle-btn{background:linear-gradient(135deg,#facc15,#f59e0b);color:#1a1400;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;box-shadow:0 2px 8px rgba(245,158,11,.3);transition:transform .12s}
+.podio-toggle-btn:hover{transform:translateY(-1px)}
+.podios-grande-grid{grid-template-columns:1fr 1fr;gap:24px;margin-top:14px}
+.pod-grande{padding:28px 24px 0}
+.pod-grande .pod-title{font-size:14px;margin-bottom:22px}
+.pod-grande .ps.f .av{width:110px;height:110px;font-size:34px}
+.pod-grande .ps.s .av{width:86px;height:86px;font-size:24px}
+.pod-grande .ps.t .av{width:74px;height:74px;font-size:20px}
+.pod-grande .ps.f .pn{font-size:17px}
+.pod-grande .pn{font-size:15px}
+.pod-grande .ps.f .pv{font-size:19px}
+.pod-grande .pv{font-size:16px}
+.pod-grande .pct-lbl{font-size:14px}
+.pod-grande .ps.f .pb{height:70px;font-size:26px}
+.pod-grande .ps.s .pb{height:50px;font-size:18px}
+.pod-grande .ps.t .pb{height:36px;font-size:16px}
+.sec-lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#4ade80;white-space:nowrap}
+.sec-line{flex:1;height:1px;background:linear-gradient(90deg,#1e3a28,transparent)}
+.kpi-hero{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.card-realizado{background:#111f16;border:1px solid #1e3a28;border-top:2px solid #4ade80;border-radius:14px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;min-height:130px}
+.card-kpi{background:#111f16;border:1px solid #1e3a28;border-top:2px solid #1e3a28;border-radius:14px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;min-height:130px}
+.card-kpi.pace{border-top-color:#22d3ee}.card-kpi.gap{border-top-color:#64748b}.card-kpi.meta{border-top-color:#22d3ee}
+.kpi-sec{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.card-sec{background:#111f16;border:1px solid #1e3a28;border-top:2px solid #1e3a28;border-radius:12px;padding:18px}
+.card-sec.proposta{border-top-color:#f59e0b}.card-sec.tkm{border-top-color:#22d3ee}.card-sec.cancel{border-top-color:#64748b}
+.klbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.75);margin-bottom:8px}
+.kval{font-size:26px;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1}
+.kval.hero-val{color:#4ade80}.kval.meta-val{color:#22d3ee}
+.ksub{font-size:11px;color:rgba(255,255,255,.65);margin-top:6px}
+.prog-wrap{margin-top:12px}
+.prog-info{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px}
+.pi-label{color:rgba(255,255,255,.7)}.pi-val{font-weight:700;font-size:13px}
+.pi-val.g{color:#4ade80}.pi-val.t{color:#22d3ee}.pi-val.a{color:#f59e0b}.pi-val.s{color:#94a3b8}
+.pbar{height:5px;border-radius:3px;background:#1a2e22;overflow:hidden}
+.pfill{height:100%;border-radius:3px;transition:width .8s}
+.pfill.g{background:linear-gradient(90deg,#16a34a,#4ade80)}.pfill.t{background:linear-gradient(90deg,#0e7490,#22d3ee)}
+
+.funnel-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.stage{background:#111f16;border:1px solid #1e3a28;border-radius:14px;padding:20px 18px;position:relative;overflow:hidden;transition:border-color .3s}
+.stage::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#4ade80,transparent)}
+.stage .label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.65);margin-bottom:8px;font-weight:700}
+.stage .value{font-size:32px;font-weight:800;color:#fff;line-height:1}
+.stage .conv{margin-top:6px;font-size:11px;color:rgba(255,255,255,.55)}
+.stage-bar-track{position:relative;height:12px;background:#0a1e11;border-radius:6px;margin-top:14px;overflow:visible}
+.stage-bar-fill{height:100%;border-radius:6px;transition:width .6s ease}
+.stage-bar-marker{position:absolute;top:-4px;width:3px;height:20px;border-radius:2px;background:#fff;box-shadow:0 0 6px rgba(255,255,255,.9)}
+.stage-bar-legend{display:flex;justify-content:space-between;margin-top:8px;font-size:9px;font-weight:700;letter-spacing:.3px}
+.sbl-real{color:#4ade80}
+.sbl-proj{color:#facc15}
+.sbl-plan{color:rgba(255,255,255,.45)}
+.stage.pace-ok{border-color:rgba(74,222,128,.45);box-shadow:0 0 0 1px rgba(74,222,128,.15) inset}
+.stage.pace-behind{border-color:rgba(245,158,11,.45);box-shadow:0 0 0 1px rgba(245,158,11,.15) inset}
+
+/* ===== CANAIS ===== */
+.canal-card{background:#111f16;border:1px solid #1e3a28;border-radius:14px;overflow:hidden;margin-bottom:16px}
+.canal-header{padding:12px 18px;font-size:13px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid #1e3a28}
+.canal-header.trafego{color:#22d3ee;background:rgba(34,211,238,.08)}
+.canal-header.base{color:#f59e0b;background:rgba(245,158,11,.08)}
+.canal-header.indicacao{color:#a78bfa;background:rgba(167,139,250,.08)}
+.canal-header.consolidado{color:#4ade80;background:rgba(74,222,128,.1)}
+.canal-card.consolidado{border-color:#2d5c38}
+.canal-table{width:100%;border-collapse:collapse}
+.canal-table th{font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.5);text-align:right;padding:8px 14px;font-weight:700;border-bottom:1px solid #1e3a28}
+.canal-table th:first-child{text-align:left}
+.canal-table td{padding:9px 14px;text-align:right;font-size:12px;color:#e8f5ee;border-bottom:1px solid rgba(255,255,255,.05)}
+.canal-table td:first-child{text-align:left;font-weight:700;color:#fff}
+.canal-table tr:last-child td{border-bottom:none}
+.canal-table .safra-col{color:#4ade80;font-weight:700}
+.canal-table .mesant-col{color:#94a3b8}
+.canal-table .total-col{color:#fff;font-weight:800}
+.canal-table tr.cr-row td{font-style:italic;color:rgba(255,255,255,.55);font-size:11px;background:rgba(255,255,255,.02)}
+.canal-table tr.cr-row td:first-child{padding-left:26px}
+.canal-table tr.cr-row .cr-value{font-style:normal;font-weight:800;color:#facc15}
+.canal-table tr.cr-row .cr-meta{font-style:normal;font-weight:700;color:#60a5fa}
+.canal-table tr.hit-row td{border-top:1px solid #1e3a28}
+.canal-table tr.hit-row .cr-value{color:#4ade80}
+
+/* ===== GRAFICOS (barras + pizza, CSS puro) ===== */
+.graficos-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-top:24px}
+.grafico-card{background:#111f16;border:1px solid #1e3a28;border-radius:14px;padding:24px;display:flex;flex-direction:column;height:100%}
+.grafico-titulo{font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.85);margin-bottom:20px}
+.barra-grupo{margin-bottom:20px}
+.barra-grupo-label{font-size:13px;font-weight:800;color:#fff;margin-bottom:10px}
+.barra-linha{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.barra-nome{width:100px;font-size:12px;font-weight:600;color:rgba(255,255,255,.75);flex-shrink:0}
+.barra-track{flex:1;height:22px;background:#0a1e11;border-radius:6px;overflow:hidden}
+.barra-fill{height:100%;border-radius:6px;min-width:2px}
+.barra-fill.trafego{background:linear-gradient(90deg,#0e7490,#22d3ee)}
+.barra-fill.base{background:linear-gradient(90deg,#b45309,#f59e0b)}
+.barra-fill.indicacao{background:linear-gradient(90deg,#6d28d9,#a78bfa)}
+.barra-valor-fora{width:48px;text-align:right;font-size:14px;font-weight:800;color:#fff;flex-shrink:0}
+
+.pizza-wrap{display:flex;align-items:center;gap:32px;justify-content:center;padding:10px 0;flex:1}
+.pizza-svg{flex-shrink:0}
+.pizza-legenda{display:flex;flex-direction:column;gap:12px}
+.pizza-legenda-item{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:#fff}
+.pizza-dot{width:14px;height:14px;border-radius:3px;flex-shrink:0}
+.pizza-dot.trafego{background:#22d3ee}
+.pizza-dot.base{background:#f59e0b}
+.pizza-dot.indicacao{background:#a78bfa}
+.pizza-pct{font-weight:900;margin-left:6px;font-size:16px}
+
+/* ===== TABELAS PESSOA x CANAL ===== */
+.pc-table{width:100%;border-collapse:collapse;margin-bottom:16px}
+.pc-table th{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.5);text-align:right;padding:8px 12px;font-weight:700;border-bottom:1px solid #1e3a28}
+.pc-table th:first-child{text-align:left}
+.pc-table td{padding:8px 12px;text-align:right;font-size:12px;color:#e8f5ee;border-bottom:1px solid rgba(255,255,255,.05)}
+.pc-table td:first-child{text-align:left;font-weight:700;color:#fff}
+.pc-table .pc-total{font-weight:800;color:#4ade80}
+.pc-avatar{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);font-size:9px;font-weight:700;margin-right:8px;vertical-align:middle;overflow:hidden}
+.pc-sub{font-size:9px;color:rgba(255,255,255,.45);font-weight:500;margin-top:2px}
+.sdr-cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;margin-bottom:16px}
+
+/* ===== SEMANAS (cards estilo Resultado por Semana) ===== */
+.semanas-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.semana-card{background:#111f16;border:1px solid #1e3a28;border-radius:14px;overflow:hidden}
+.semana-card.w1{border-top:3px solid #22d3ee}
+.semana-card.w2{border-top:3px solid #4ade80}
+.semana-card.w3{border-top:3px solid #f59e0b}
+.semana-card.w4{border-top:3px solid #64748b}
+.semana-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 14px}
+.semana-titulo{font-size:14px;font-weight:800;letter-spacing:1.2px;color:rgba(255,255,255,.8)}
+.semana-pct{font-size:36px;font-weight:900;color:#fff}
+.semana-money{display:grid;grid-template-columns:repeat(3,1fr);background:#0a1e11;margin:0 18px;border-radius:8px;padding:12px 8px;gap:4px}
+.semana-money div{text-align:center}
+.semana-money .sm-lbl{font-size:11px;font-weight:700;letter-spacing:.6px;color:rgba(255,255,255,.55);margin-bottom:5px}
+.semana-money .sm-val{font-size:17px;font-weight:800;color:#fff;line-height:1.3}
+.semana-lista{padding:18px 24px 22px;display:flex;flex-direction:column;gap:14px}
+.semana-item{display:grid;grid-template-columns:66px auto 1fr;align-items:center;gap:12px}
+.semana-item .si-label{font-size:14px;font-weight:700;color:rgba(255,255,255,.85)}
+.semana-item .si-val{font-size:15px;font-weight:800;color:#fff;text-align:left;white-space:nowrap}
+.semana-item .si-val.warn{color:#f87171}
+.si-bar-track{height:6px;border-radius:3px;background:#1a2e22;overflow:hidden}
+.si-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#16a34a,#4ade80)}
+
+/* ===== RANKING (Closer/SDR) ===== */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;padding:14px 28px 0}
+.kpi{background:#0d2116;border:1px solid rgba(34,197,94,.3);border-radius:14px;padding:14px 16px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,rgba(34,197,94,.8),rgba(34,197,94,.2))}
+.kpi-l{font-size:10px;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;font-weight:700}
+.kpi-v{font-size:22px;font-weight:800;line-height:1;color:#fff}
+.kpi-v.money{color:#4ade80;font-size:16px}
+
+.rank-body{padding:0 28px 20px;flex:1;display:flex;flex-direction:column}
+.subtabs{display:flex;gap:4px;margin-bottom:10px}
+.subtab{padding:4px 14px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;font-family:inherit;color:rgba(255,255,255,.55);background:transparent;border:1px solid rgba(255,255,255,.15);transition:all .12s}
+.subtab.on{background:rgba(34,197,94,.15);color:#4ade80;border-color:rgba(34,197,94,.35)}
+.subpanel{display:none;flex:1;flex-direction:column}
+.subpanel.on{display:flex}
+
+.sec{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.65);border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:6px;margin-bottom:8px}
+.main-layout{display:grid;grid-template-columns:420px 1fr;gap:14px;flex:1}
+.left-col{display:flex;flex-direction:column;gap:8px}
+
+.pod-card{flex-shrink:0;background:#071a0e;border:1px solid rgba(34,197,94,.4);border-radius:16px;padding:14px 16px 0}
+.pod-title{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#4ade80;text-align:center;margin-bottom:12px;font-weight:700}
+.podium{display:flex;align-items:flex-end;justify-content:center}
+.ps{display:flex;flex-direction:column;align-items:center;flex:1}
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;border:3px solid transparent;overflow:hidden}
+.ps.f .av{width:78px;height:78px;font-size:24px;border-color:#ffd740;background:rgba(255,215,64,.12);color:#ffd740}
+.ps.s .av{width:60px;height:60px;font-size:17px;border-color:#c0cdd4;background:rgba(176,190,197,.1);color:#c0cdd4}
+.ps.t .av{width:52px;height:52px;font-size:14px;border-color:#cd7f32;background:rgba(205,127,50,.1);color:#cd7f32}
+.pn{font-size:12px;font-weight:700;text-align:center;margin-top:5px;color:#fff}
+.ps.f .pn{font-size:13px}
+.pv{font-size:12px;font-weight:700;margin-top:1px;color:#d1fae5}
+.ps.f .pv{font-size:14px}
+.pct-lbl{font-size:11px;font-weight:700;color:rgba(255,255,255,.75)}
+.ps.f .pct-lbl{color:#4ade80}
+.pb{width:100%;border-radius:5px 5px 0 0;display:flex;align-items:center;justify-content:center;font-weight:800;margin-top:8px}
+.ps.f .pb{height:48px;font-size:18px;color:#ffd740;background:rgba(255,215,64,.08);border-top:1px solid rgba(255,215,64,.25)}
+.ps.s .pb{height:34px;font-size:13px;color:#c0cdd4;background:rgba(176,190,197,.05);border-top:1px solid rgba(176,190,197,.15)}
+.ps.t .pb{height:24px;font-size:12px;color:#cd9f72;background:rgba(205,127,50,.05);border-top:1px solid rgba(205,127,50,.15)}
+
+.zonas{display:flex;flex-direction:column;gap:7px}
+.zona-card{border-radius:10px;padding:10px 12px;border:1px solid rgba(34,197,94,.25);background:#0a1e11}
+.zona-header{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.zona-badge{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:rgba(34,197,94,.2);color:#4ade80}
+.zona-sub{font-size:10px;color:rgba(255,255,255,.65);font-weight:500;margin-left:auto}
+.zona-pessoas{display:flex;flex-wrap:wrap;gap:5px}
+.zona-chip{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:7px;min-width:110px;flex:1;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25)}
+.zona-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;background:rgba(34,197,94,.2);color:#4ade80;border:1px solid rgba(34,197,94,.35);overflow:hidden}
+.zona-info{flex:1;min-width:0}
+.zona-nome{font-size:12px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.zona-val{font-size:11px;color:#4ade80;margin-top:1px;font-weight:600}
+.zona-empty{font-size:11px;color:rgba(255,255,255,.5);padding:4px 0;font-style:italic}
+.zona-badge.neutral{background:rgba(255,255,255,.12);color:rgba(255,255,255,.7)}
+
+/* ===== PACE BOXES (Agendamento/Show, sem podio) ===== */
+.pace-boxes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.pace-box{border-radius:10px;padding:14px 16px;border:1px solid}
+.pace-box.ok{border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.06)}
+.pace-box.bad{border-color:rgba(248,113,113,.4);background:rgba(248,113,113,.06)}
+.pace-box-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.pace-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:5px}
+.pace-badge.ok{background:rgba(34,197,94,.2);color:#4ade80}
+.pace-badge.bad{background:rgba(248,113,113,.2);color:#f87171}
+.pace-count{font-size:11px;color:rgba(255,255,255,.6)}
+.pace-empty{font-size:12px;color:rgba(255,255,255,.4);font-style:italic}
+.pace-names{font-size:12px;color:#fff;line-height:1.6}
+.pace-names-list{display:flex;flex-wrap:wrap;gap:8px}
+.pace-pessoa{display:inline-flex;align-items:center;font-size:12px;font-weight:600;color:#fff;background:rgba(255,255,255,.06);border-radius:20px;padding:3px 12px 3px 3px}
+.pace-pessoa .pc-avatar{margin-right:6px}
+.tt{border-bottom:1px dashed rgba(255,255,255,.4);cursor:help}
+.tooltip-box{display:none;position:absolute;z-index:9999;max-width:280px;background:#0a1e11;border:1px solid #2d5c38;border-radius:10px;padding:12px 14px;font-size:12px;line-height:1.55;color:#e8f5ee;box-shadow:0 10px 28px rgba(0,0,0,.55);pointer-events:none}
+.tooltip-box strong{color:#4ade80}
+
+.table-wrap{flex:1;overflow-y:auto}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.55);text-align:right;padding:0 8px 9px;font-weight:700;position:sticky;top:0;background:#0b1a10}
+thead th:first-child{text-align:left}
+tbody tr{border-top:1px solid rgba(255,255,255,.08)}
+tbody tr:hover{background:rgba(255,255,255,.04)}
+tbody td{padding:8px 8px;text-align:right;font-size:13px;color:#e8f5ee}
+tbody td:first-child{text-align:left;color:#fff;font-weight:600}
+.rp{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-size:10px;font-weight:700;margin-right:6px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.7)}
+.pill{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700}
+.pill.g{background:rgba(34,197,94,.2);color:#4ade80}
+.pill.a{background:rgba(255,255,255,.12);color:rgba(255,255,255,.8)}
+.pill.r{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6)}
+
+footer{background:#081209;border-top:1px solid rgba(255,255,255,.06);padding:8px 28px;text-align:center;font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.04em}
+#loading{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0b1a10;z-index:999;gap:14px}
+.spinner{width:32px;height:32px;border:2px solid rgba(255,255,255,.08);border-top-color:#22c55e;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading p{color:rgba(255,255,255,.25);font-size:12px}
+
+@media (max-width:1000px){.main-layout{grid-template-columns:1fr}.kpi-row,.kpi-hero,.kpi-sec,.funnel-grid{grid-template-columns:repeat(2,1fr)}}
+/* ===== RESPONSIVO ===== */
+.table-wrap{overflow-x:auto}
+.table-wrap table{min-width:640px}
+
+@media (max-width: 960px){
+  header{flex-wrap:wrap;gap:10px;padding:10px 14px}
+  .hdr-right{flex-wrap:wrap;justify-content:flex-end;gap:6px}
+  .main-tabs{overflow-x:auto;white-space:nowrap;padding:8px 14px 0}
+  .main-tabs::-webkit-scrollbar{display:none}
+  .placar-main,.rank-body,.kpi-row{padding-left:14px;padding-right:14px}
+  .kpi-hero{grid-template-columns:repeat(2,1fr)}
+  .kpi-sec{grid-template-columns:repeat(2,1fr)}
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .funnel-grid{grid-template-columns:repeat(2,1fr)}
+  .graficos-grid{grid-template-columns:1fr}
+  .podios-grande-grid{grid-template-columns:1fr}
+  .semanas-grid{grid-template-columns:repeat(2,1fr)}
+  .sdr-cards-grid{grid-template-columns:1fr}
+  .main-layout{grid-template-columns:1fr}
+  .canal-table{display:block;overflow-x:auto}
+  .pc-table{display:block;overflow-x:auto}
+}
+
+@media (max-width: 600px){
+  header{padding:8px 10px}
+  .logo-text .t1{font-size:12px}
+  .logo-text .t2{font-size:9px}
+  .periodo-label{min-width:76px;font-size:10px}
+  .periodo-nav{margin-right:4px;padding:3px 4px}
+  .hdr-btn{padding:6px 9px;font-size:10px}
+  .placar-main,.rank-body,.kpi-row{padding-left:10px;padding-right:10px}
+  .kpi-hero{grid-template-columns:1fr}
+  .kpi-sec{grid-template-columns:1fr}
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .funnel-grid{grid-template-columns:1fr}
+  .semanas-grid{grid-template-columns:1fr}
+  .subtabs{overflow-x:auto;white-space:nowrap;flex-wrap:nowrap}
+  .pod-grande{padding:18px 14px 0}
+  .pod-grande .ps.f .av{width:78px;height:78px;font-size:24px}
+  .pod-grande .ps.s .av{width:62px;height:62px;font-size:18px}
+  .pod-grande .ps.t .av{width:54px;height:54px;font-size:15px}
+  .pod-grande .ps.f .pb{height:48px;font-size:18px}
+  .pod-grande .ps.s .pb{height:34px;font-size:13px}
+  .pod-grande .ps.t .pb{height:24px;font-size:12px}
+  .tooltip-box{max-width:220px;font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<div id="loading"><div class="spinner"></div><p>Carregando dados...</p></div>
+
+<div id="app" style="display:none">
+  <header>
+    <div class="logo">
+      <div class="logo-icon"><img src="https://drive.google.com/thumbnail?id=1CPz1Xg_r2wsWCHxrzHK5c2VTWEnQhZzl&sz=w200-h200" alt="CAUP" style="width:100%;height:100%;object-fit:cover;border-radius:9px" onerror="this.parentElement.textContent='🏆'"></div>
+      <div class="logo-text">
+        <div class="t1">CAUP <span style="color:rgba(255,255,255,.3);font-weight:400">|</span> Capital Upgrade</div>
+        <div class="t2">Time de Milhões</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div class="periodo-nav">
+        <button class="periodo-btn" onclick="mudarPeriodo(-1)">◀</button>
+        <span id="periodoLabel" class="periodo-label">—</span>
+        <button class="periodo-btn" onclick="mudarPeriodo(1)">▶</button>
+      </div>
+      <span id="ts"></span>
+      <button class="hdr-btn" onclick="loadAll(false)">Atualizar</button>
+      <a class="hdr-btn" href="documentacao-fortaleza.html" target="_blank" style="text-decoration:none;display:inline-flex;align-items:center">📄 Documentação</a>
+    </div>
+  </header>
+
+  <nav class="main-tabs">
+    <button class="main-tab on" onclick="swMain('placar',this)">Placar</button>
+    <button class="main-tab" onclick="swMain('podio',this)">Pódio</button>
+    <button class="main-tab" onclick="swMain('canais',this)">Canais</button>
+    <button class="main-tab" onclick="swMain('closer',this)">Closers</button>
+    <button class="main-tab" onclick="swMain('sdr',this)">SDRs</button>
+  </nav>
+
+  <!-- PLACAR -->
+  <div id="panel-placar" class="main-panel on">
+    <div id="placar-main" class="placar-main"></div>
+  </div>
+
+  <!-- PÓDIO -->
+  <div id="panel-podio" class="main-panel">
+    <div id="podio-main" class="placar-main"></div>
+  </div>
+
+  <!-- CANAIS -->
+  <div id="panel-canais" class="main-panel">
+    <div id="canais-funil" class="placar-main"></div>
+  </div>
+
+  <!-- CLOSERS -->
+  <div id="panel-closer" class="main-panel">
+    <div class="kpi-row" id="ck"></div>
+    <div class="rank-body">
+      <div class="subtabs">
+        <button class="subtab on" onclick="swSub('closer','agend',this)">Agendamento</button>
+        <button class="subtab" onclick="swSub('closer','show',this)">Show</button>
+        <button class="subtab" onclick="swSub('closer','vendas',this)">Vendas</button>
+        <button class="subtab" onclick="swSub('closer','canal',this)">Por Canal</button>
+      </div>
+      <div id="closer-agend" class="subpanel on"></div>
+      <div id="closer-show" class="subpanel"></div>
+      <div id="closer-vendas" class="subpanel"></div>
+      <div id="closer-canal" class="subpanel"></div>
+    </div>
+  </div>
+
+  <!-- SDRs -->
+  <div id="panel-sdr" class="main-panel">
+    <div class="kpi-row" id="sk"></div>
+    <div class="rank-body">
+      <div class="subtabs">
+        <button class="subtab on" onclick="swSub('sdr','agend',this)">Agendamentos</button>
+        <button class="subtab" onclick="swSub('sdr','show',this)">Shows</button>
+        <button class="subtab" onclick="swSub('sdr','vendas',this)">Vendas</button>
+        <button class="subtab" onclick="swSub('sdr','canal',this)">Por Canal</button>
+        <button class="subtab" onclick="swSub('sdr','ligacoes',this)">Ligações</button>
+      </div>
+      <div id="sdr-agend" class="subpanel on"></div>
+      <div id="sdr-show" class="subpanel"></div>
+      <div id="sdr-vendas" class="subpanel"></div>
+      <div id="sdr-canal" class="subpanel"></div>
+      <div id="sdr-ligacoes" class="subpanel"></div>
+    </div>
+  </div>
+
+  <footer>Dashboard Fortaleza · Capital Upgrade · Meta/Pace da planilha · Realizado ao vivo da Ploomes</footer>
+</div>
+
+<script>
+const BASE_URL = 'https://script.google.com/macros/s/AKfycbxA4LAr8zI92Rnx1QXDEFfLC44uqC93Ska1lT_fvr99e-Zttcz4FPq4EWZZbloqSg/exec';
+const PLACAR_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzh_v_houxl6pPM6EukvHwRPissMeDgrIpyc15AM0kYhcyYoG7RRPLiSpmaXbZUg85R/exec';
+
+const MES_MINIMO = { ano: 2026, mes: 6 }; // Junho/2026 — nao navega antes disso
+const NOMES_MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+const hojeInicial = new Date();
+let periodoAtual = { ano: hojeInicial.getFullYear(), mes: hojeInicial.getMonth() + 1 };
+
+function periodoQuery_(){
+  return '&ano=' + periodoAtual.ano + '&mes=' + periodoAtual.mes;
+}
+
+function atualizarLabelPeriodo(){
+  document.getElementById('periodoLabel').textContent = NOMES_MESES[periodoAtual.mes - 1] + '/' + periodoAtual.ano;
+  const ehMinimo = (periodoAtual.ano === MES_MINIMO.ano && periodoAtual.mes === MES_MINIMO.mes);
+  document.querySelector('.periodo-btn[onclick="mudarPeriodo(-1)"]').disabled = ehMinimo;
+}
+
+function mudarPeriodo(delta){
+  let novoMes = periodoAtual.mes + delta;
+  let novoAno = periodoAtual.ano;
+  if(novoMes < 1){ novoMes = 12; novoAno -= 1; }
+  if(novoMes > 12){ novoMes = 1; novoAno += 1; }
+  if(novoAno < MES_MINIMO.ano || (novoAno === MES_MINIMO.ano && novoMes < MES_MINIMO.mes)) return;
+  periodoAtual = { ano: novoAno, mes: novoMes };
+  atualizarLabelPeriodo();
+  loadAll(false);
+}
+
+function initTooltips_(){
+  const box = document.createElement('div');
+  box.id = 'tooltipBox';
+  box.className = 'tooltip-box';
+  document.body.appendChild(box);
+
+  document.addEventListener('mouseover', function(e){
+    const el = e.target.closest('.tt');
+    if(!el) return;
+    box.innerHTML = el.getAttribute('data-tt') || '';
+    box.style.display = 'block';
+  });
+  document.addEventListener('mousemove', function(e){
+    if(box.style.display === 'block'){
+      const maxLeft = window.innerWidth - 300;
+      const left = Math.min(e.pageX + 14, maxLeft);
+      box.style.left = left + 'px';
+      box.style.top = (e.pageY + 16) + 'px';
+    }
+  });
+  document.addEventListener('mouseout', function(e){
+    const el = e.target.closest('.tt');
+    if(!el) return;
+    box.style.display = 'none';
+  });
+}
+
+function tt_(label, explicacao){
+  return '<span class="tt" data-tt="'+explicacao.replace(/"/g,'&quot;')+'">'+label+'</span>';
+}
+
+function ini(nome){ return (nome||'?').split(' ').map(function(p){return p[0];}).slice(0,2).join('').toUpperCase(); }
+
+// Fotos da equipe (Google Drive, pasta compartilhada publicamente)
+const FOTOS_POR_NOME = {
+  'Amanda Barata': '1RbnRzJ8-OCoKIjIKbkDPYDvrtZcwviv9',
+  'Estrela Bárbara': '1odr6chRm0-W8aInNkrsYGiqDe3YgFsVq',
+  'Gicelio Igor': '1m_CJcKj2ndnSBSwtLzR17pqwfXy95FhZ',
+  'Hadson Souza': '1XyIidVERRN7KoBFnWvkyuvl6O4JIHMxP',
+  'Jarbas Teixeira': '1CCqd2q47EPNJGFiGxzH200BsUdaG-46i',
+  'Juan Cavalcante': '1QiTqJ0T_Eb1zqZDf5DEYNxbYQQ0ngYTT',
+  'Patricia Macieira': '14CELa0wCtOPZWKy-UCthAr1024B0oJvo',
+  'Priscylla Silva': '19R_ScPTWu0BXRMpEoIjEKyM-uz3N0OEC',
+  'Samara Almeida': '16n8VxtNXoePVHw9jyYW_EIOrKyEKI19V',
+  'Victoria Wauanny': '1pEeK4MRnYKZMWpIeBifeEKOF64W2SGHC',
+  'Roberta Rocha': '1-gmloYqTCN78Rd-9Xm3Q80VGHwqiDK0U',
+  'Sergio Vinicius': '1IQWcbcfilZfSNDRgDmh1qXnTAIM8U4xo',
+  'Daiana Souza': '1v7U5mhk8SYJjHqV2pBb-6rxvy3tu8ob5',
+  'Daiana Sousa': '1v7U5mhk8SYJjHqV2pBb-6rxvy3tu8ob5',
+  'Ana Flávia Barbosa': '1Gfg9fh9bqQ2yeRIi3sHAA32hV8aRe9Dj',
+  'Rene Matos': '10QROcnTpLg0SWafViPVa53MVLm1JWLVR',
+  'Guilherme Xavier': '1qNjgjg9juvpt_BlaNfCJ4XQ45qLypwgn',
+  'Brena Pinheiro': '1tsZZPE-v1LnOIGV_S3ACBCno-qUrD0Zk',
+  'Sthefany Vasconcelos': '11FBMdjWfOjg3Du2ktWMxjUmJPzY_ia9i'
+};
+
+function normalizarNome_(s){
+  return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+}
+
+const FOTOS_NORM_ = {};
+Object.keys(FOTOS_POR_NOME).forEach(function(k){ FOTOS_NORM_[normalizarNome_(k)] = FOTOS_POR_NOME[k]; });
+
+function fotoUrl_(nomeCompleto){
+  const partes = (nomeCompleto||'').split(' ').filter(Boolean);
+  const candidatos = [];
+  if(partes.length>=3) candidatos.push(partes.slice(0,3).join(' '));
+  if(partes.length>=2) candidatos.push(partes.slice(0,2).join(' '));
+  if(partes.length>=1) candidatos.push(partes[0]);
+  for(let i=0;i<candidatos.length;i++){
+    const id = FOTOS_NORM_[normalizarNome_(candidatos[i])];
+    if(id) return 'https://drive.google.com/thumbnail?id='+id+'&sz=w200-h200';
+  }
+  return null;
+}
+
+// Retorna o conteudo interno de um avatar: <img> se tiver foto, ou as iniciais como texto
+function avatarConteudo_(nome){
+  const url = fotoUrl_(nome);
+  if(url){
+    return '<img src="'+url+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.outerHTML=\''+ini(nome)+'\'">';
+  }
+  return ini(nome);
+}
+function NUM(v){ return new Intl.NumberFormat('pt-BR').format(Math.round(v||0)); }
+function brl(v){ return (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}); }
+function PCT(v){ if(v===null||v===undefined||isNaN(v)) return '—'; return Math.round(v*100)+'%'; }
+function numG(v){ const n = parseFloat(String(v).replace(/[^\d.,-]/g,'').replace(',','.')); return isNaN(n) ? 0 : n; }
+
+// ============================================================
+// PLACAR DE VENDAS
+// Meta / Pace / Proposta na Rua / TKM Planejado / Cancelamentos -> planilha
+// Realizado / Faturamento / Ticket Medio Real / Funil -> API Ploomes
+// ============================================================
+async function fetchPlacarMeta(){
+  const res = await fetch(BASE_URL + '?tipo=placarmeta' + periodoQuery_(), {cache:'no-store'});
+  return res.json();
+}
+
+function pCls(p){ return p>=100?'g':p>=70?'t':p>=40?'a':'s'; }
+
+function renderSemanas(linhas){
+  if(!linhas || linhas.length===0) return '';
+
+  const classesTopo = ['w1','w2','w3','w4'];
+
+  const cards = linhas.map(function(s, i){
+    const plan = s.planVendaValor || 0;
+    const proj = s.projVendaValor || 0;
+    const real = s.vendaValorRealizado || 0;
+    const pct = plan>0 ? Math.round((real/plan)*100) : 0;
+
+    function item(label, real, meta, isMoney){
+      const fmt = isMoney ? brl : NUM;
+      const pctItem = meta>0 ? Math.min(Math.round((real/meta)*100),100) : (real>0?100:0);
+      return '<div class="semana-item">' +
+        '<div class="si-label">'+label+'</div>' +
+        '<div class="si-val">'+fmt(real)+'/'+fmt(meta)+'</div>' +
+        '<div class="si-bar-track"><div class="si-bar-fill" style="width:'+pctItem+'%"></div></div>' +
+      '</div>';
+    }
+
+    return '<div class="semana-card '+classesTopo[i % 4]+'">' +
+      '<div class="semana-head"><span class="semana-titulo">'+s.semana.toUpperCase()+'</span><span class="semana-pct">'+pct+'%</span></div>' +
+      '<div class="semana-money">' +
+        '<div><div class="sm-lbl">'+tt_('PLAN.','Meta de venda planejada pra essa semana (planilha).')+'</div><div class="sm-val">'+brl(plan)+'</div></div>' +
+        '<div><div class="sm-lbl">'+tt_('PROJ.','Projeção de venda pra essa semana (planilha).')+'</div><div class="sm-val">'+brl(proj)+'</div></div>' +
+        '<div><div class="sm-lbl">'+tt_('REAL.','Vendido de verdade nessa semana (via API).')+'</div><div class="sm-val">'+brl(real)+'</div></div>' +
+      '</div>' +
+      '<div class="semana-lista">' +
+        item('Vendas', real, plan, true) +
+        item('Leads', s.leadsRealizado, s.metaLead, false) +
+        item('Agend.', s.agendamentoRealizado, s.metaAgendamento, false) +
+        item('Shows', s.showRealizado, s.metaShow, false) +
+        '<div class="semana-item"><div class="si-label">TKM</div><div class="si-val">'+(s.tkmSemana>0?brl(s.tkmSemana):'—')+'</div><div></div></div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  return '<div class="sec-hdr"><span class="sec-lbl">'+tt_('Resultado por Semana','Divide o mês em 4 blocos (domingo-sábado). Se sobrar um 5º, funde com o vizinho: se a última semana já tem 5 dias úteis, junta as 2 primeiras; senão, junta as 2 últimas.')+'</span><div class="sec-line"></div></div>' +
+    '<div class="semanas-grid">'+cards+'</div>';
+}
+
+function stageBarHtml_(realizado, planejado, projetado){
+  if(!planejado || planejado<=0){
+    return '<div class="stage-bar-legend"><span class="sbl-plan">Meta ainda não definida na planilha</span></div>';
+  }
+  const pctReal = Math.min((realizado/planejado)*100, 100);
+  const pctProj = Math.min((projetado/planejado)*100, 100);
+  const onPace = realizado >= projetado;
+  const corFill = onPace ? 'linear-gradient(90deg,#16a34a,#4ade80)' : 'linear-gradient(90deg,#b45309,#f59e0b)';
+  return '<div class="stage-bar-track">' +
+      '<div class="stage-bar-fill" style="width:'+pctReal+'%;background:'+corFill+'"></div>' +
+      '<div class="stage-bar-marker" style="left:'+pctProj+'%"></div>' +
+    '</div>' +
+    '<div class="stage-bar-legend">' +
+      '<span class="sbl-real">Real '+NUM(realizado)+'</span>' +
+      '<span class="sbl-proj">Pace '+NUM(projetado)+'</span>' +
+      '<span class="sbl-plan">Meta '+NUM(planejado)+'</span>' +
+    '</div>';
+}
+
+function listaPodioSimples_(ranking, valK, metaK){
+  const ordenado = ranking.slice().sort(function(a,b){ return (b[valK]||0)-(a[valK]||0); });
+  const rows = ordenado.map(function(p){
+    const val = p[valK]||0, meta = p[metaK]||0, pct = meta>0 ? val/meta : null;
+    return '<tr><td><span class="pc-avatar">'+avatarConteudo_(p.nome)+'</span>'+p.nome+'</td>'+
+      '<td>'+brl(meta)+'</td><td class="total-col">'+brl(val)+'</td><td>'+PCT(pct)+'</td></tr>';
+  }).join('');
+  return '<table class="canal-table"><thead><tr>'+
+    '<th style="text-align:left">Nome</th><th>Meta</th><th>Realizado</th><th>% Atingimento</th>'+
+    '</tr></thead><tbody>'+rows+'</tbody></table>';
+}
+
+function renderPodioTab_(closer, sdr){
+  function coluna(titulo, ranking){
+    const top3 = (ranking||[]).slice().sort(function(a,b){ return (b.vendaFaturamento||0)-(a.vendaFaturamento||0); }).slice(0,3);
+    return '<div>' +
+      '<div class="pod-card pod-grande"><div class="pod-title">'+titulo+'</div>'+podium(top3, 'vendaFaturamento', 'metaVenda')+'</div>' +
+      listaPodioSimples_(ranking||[], 'vendaFaturamento', 'metaVenda') +
+    '</div>';
+  }
+
+  document.getElementById('podio-main').innerHTML =
+    '<div class="sec-hdr"><span class="sec-lbl">Pódio do Mês — Vendido</span><div class="sec-line"></div></div>' +
+    '<div class="podios-grande-grid" style="display:grid">' +
+      coluna('Closer', closer) +
+      coluna('SDR', sdr) +
+    '</div>';
+}
+
+function renderPlacar(sheet, funil, semanas, canais, closer, sdr){
+  const meta = sheet.meta, pace = sheet.pace;
+  const realizado = funil.Faturamento || 0;
+  const gap = pace - realizado;
+  const pReal = meta>0 ? Math.round((realizado/meta)*100) : 0;
+  const pPace = meta>0 ? Math.round((pace/meta)*100) : 0;
+  const tkmReal = funil.TicketMedio || 0;
+
+  const hero =
+    '<div class="sec-hdr"><span class="sec-lbl">Visao Geral</span><div class="sec-line"></div></div>' +
+    '<div class="kpi-hero">' +
+      '<div class="card-realizado"><div class="klbl">'+tt_('Realizado no Mes','Soma das vendas fechadas no período (ao vivo, via API).')+'</div><div class="kval hero-val">'+brl(realizado)+'</div>' +
+        '<div class="prog-wrap"><div class="prog-info"><span class="pi-label">Atingimento</span><span class="pi-val '+pCls(pReal)+'">'+pReal+'%</span></div>' +
+        '<div class="pbar" style="margin-bottom:5px"><div class="pfill g" style="width:'+Math.min(pReal,100)+'%"></div></div>' +
+        '<div style="font-size:9px;color:rgba(255,255,255,.5)">Falta: <span style="color:rgba(255,255,255,.8);font-weight:600">'+brl(Math.max(meta-realizado,0))+'</span></div></div></div>' +
+      '<div class="card-kpi meta"><div class="klbl">'+tt_('Meta do Mes','Meta definida na aba Metas_Mensais_Fortaleza da sua planilha.')+'</div><div class="kval meta-val">'+brl(meta)+'</div><div class="ksub">Objetivo de faturamento</div></div>' +
+      '<div class="card-kpi pace"><div class="klbl">'+tt_('Pace Necessario','Quanto você já deveria ter vendido hoje: Meta × dias úteis passados ÷ dias úteis do mês.')+'</div><div class="kval">'+brl(pace)+'</div>' +
+        '<div class="pbar" style="margin-top:10px"><div class="pfill t" style="width:'+Math.min(pPace,100)+'%"></div></div><div class="ksub" style="margin-top:4px">Deveria ter hoje</div></div>' +
+      '<div class="card-kpi gap"><div class="klbl">'+tt_('GAP do Pace','Pace − Realizado. Verde = no pace ou à frente; vermelho = atrás.')+'</div><div class="kval" style="color:'+(gap<=0?'#4ade80':'#f87171')+'">'+brl(gap)+'</div><div class="ksub">Pace − Realizado</div></div>' +
+    '</div>' +
+    '<div class="kpi-sec">' +
+      '<div class="card-sec proposta"><div class="klbl">'+tt_('Proposta na Rua','Valor de negociações em aberto, preenchido manualmente na planilha.')+'</div><div class="kval">'+brl(sheet.propostaNaRua)+'</div><div class="ksub">Negociacoes em aberto (planilha)</div></div>' +
+      '<div class="card-sec tkm"><div class="klbl">'+tt_('Ticket Medio','Faturamento ÷ Quantidade de vendas do período.')+'</div><div class="kval">'+brl(tkmReal)+'</div><div class="ksub">Planejado: '+brl(sheet.tkmPlanejado)+'</div></div>' +
+      '<div class="card-sec cancel"><div class="klbl">'+tt_('Cancelamentos','Vendas canceladas no mês, preenchido manualmente na planilha.')+'</div><div class="kval">'+brl(sheet.vendasCanceladasReais)+'</div><div class="ksub">'+sheet.vendasCanceladasQtd+' venda(s) cancelada(s) (planilha)</div></div>' +
+    '</div>';
+
+  // Planejado/Projetado consolidados (soma dos 3 canais), vindos da aba Canais
+  const consolidado = (canais && canais.length) ? somarConsolidadoCanais_(canais) : [];
+  const porEtapaConsolidado = {};
+  consolidado.forEach(function(l){ porEtapaConsolidado[l.Etapa] = l; });
+
+  const stages = [
+    {l:'Leads', v: funil.Leads, c:null, etapaCanal:'Leads', exp:'Negócios criados no funil SDR no período.'},
+    {l:'Conexao', v: funil.Conexao, c: funil.ConvConexao, etapaCanal:'Conexão', exp:'Leads que o SDR conseguiu conectar (campo de conexão preenchido).'},
+    {l:'Agendamento', v: funil.Agendamento, c: funil.ConvAgendamento, etapaCanal:'Agendamento', exp:'Leads com reunião agendada pelo SDR.'},
+    {l:'Show', v: funil.Reuniao, c: funil.ConvReuniao, etapaCanal:'Show', exp:'Entrada no funil Closer (reunião realizada, "show").'},
+    {l:'Venda', v: funil.Venda, c: funil.ConvVenda, etapaCanal:'Venda (Qtd)', exp:'Negócios ganhos no funil Closer no período.'}
+  ];
+  const funilHtml =
+    '<div class="sec-hdr"><span class="sec-lbl">Funil - no Mes</span><div class="sec-line"></div></div>' +
+    '<div class="funnel-grid">' + stages.map(function(s){
+      const cd = porEtapaConsolidado[s.etapaCanal];
+      const planejado = cd ? Number(cd.Planejado)||0 : 0;
+      const projetado = cd ? Number(cd.Projetado)||0 : 0;
+      const onPace = planejado>0 ? (s.v >= projetado) : null;
+      const classePace = onPace===null ? '' : (onPace ? 'pace-ok' : 'pace-behind');
+      return '<div class="stage '+classePace+'"><div class="label">'+tt_(s.l, s.exp)+'</div><div class="value">'+NUM(s.v)+'</div>' +
+        (s.c!==null?'<div class="conv">Conv: '+PCT(s.c)+'</div>':'') +
+        stageBarHtml_(s.v, planejado, projetado) +
+        '</div>';
+    }).join('') + '</div>';
+
+  document.getElementById('placar-main').innerHTML = hero + funilHtml + renderSemanas(semanas);
+}
+
+// ============================================================
+// CANAIS — Performance por Canal (Planejado/Projetado + Realizado Safra x Mes Anterior + CRs)
+// ============================================================
+const ORDEM_ETAPAS_CANAL = ['Leads','Conexão','Agendamento','Show','Venda (Qtd)','Venda (R$)'];
+// Meta Caup For (linhas 9/13/17/21 da planilha) — só Tráfego Pago e Consolidado têm meta definida;
+// Base e Indicação ficam vazios na planilha, então ficam vazios aqui também.
+const META_CR_POR_CANAL = {
+  trafego: { cr1: 0.50, cr2: 0.35, cr3: 0.75, cr4: 0.20 },
+  consolidado: { cr1: 0.50, cr2: 0.35, cr3: 0.75, cr4: 0.20 },
+  base: {},
+  indicacao: {}
+};
+
+function somarConsolidadoCanais_(linhas){
+  const porEtapa = {};
+  linhas.forEach(function(l){
+    if(!porEtapa[l.Etapa]){
+      porEtapa[l.Etapa] = { Canal:'Consolidado', Etapa:l.Etapa, Planejado:0, Projetado:0, RealizadoSafra:0, RealizadoMesAnterior:0, RealizadoTotal:0 };
+    }
+    const d = porEtapa[l.Etapa];
+    d.Planejado += Number(l.Planejado)||0;
+    d.Projetado += Number(l.Projetado)||0;
+    d.RealizadoSafra += Number(l.RealizadoSafra)||0;
+    d.RealizadoMesAnterior += Number(l.RealizadoMesAnterior)||0;
+    d.RealizadoTotal += Number(l.RealizadoTotal)||0;
+  });
+  return ORDEM_ETAPAS_CANAL.map(function(e){ return porEtapa[e]; }).filter(Boolean);
+}
+
+function calcularCRsCanal_(mapaEtapas){
+  function val(etapa, coluna){ return mapaEtapas[etapa] ? Number(mapaEtapas[etapa][coluna])||0 : 0; }
+  function razao(num, den){ return den>0 ? num/den : null; }
+
+  const leadsSafra=val('Leads','RealizadoSafra'), leadsMes=val('Leads','RealizadoMesAnterior'), leadsTotal=val('Leads','RealizadoTotal');
+  const conexaoSafra=val('Conexão','RealizadoSafra'), conexaoMes=val('Conexão','RealizadoMesAnterior'), conexaoTotal=val('Conexão','RealizadoTotal');
+  const agendSafra=val('Agendamento','RealizadoSafra'), agendMes=val('Agendamento','RealizadoMesAnterior'), agendTotal=val('Agendamento','RealizadoTotal');
+  const showSafra=val('Show','RealizadoSafra'), showMes=val('Show','RealizadoMesAnterior'), showTotal=val('Show','RealizadoTotal');
+  const vendaSafra=val('Venda (Qtd)','RealizadoSafra'), vendaMes=val('Venda (Qtd)','RealizadoMesAnterior'), vendaTotal=val('Venda (Qtd)','RealizadoTotal');
+
+  return {
+    cr1: { safra: razao(conexaoSafra,leadsSafra), mesAnterior: razao(conexaoMes,leadsMes), total: razao(conexaoTotal,leadsTotal) },
+    cr2: { safra: razao(agendSafra,conexaoSafra), mesAnterior: razao(agendMes,conexaoMes), total: razao(agendTotal,conexaoTotal) },
+    cr3: { safra: razao(showSafra,agendSafra), mesAnterior: razao(showMes,agendMes), total: razao(showTotal,agendTotal) },
+    cr4: { safra: razao(vendaSafra,showSafra), mesAnterior: razao(vendaMes,showMes), total: razao(vendaTotal,showTotal) },
+    hitRate: { safra: razao(vendaSafra,leadsSafra), mesAnterior: razao(vendaMes,leadsMes), total: razao(vendaTotal,leadsTotal) }
+  };
+}
+
+function linhaCR_(label, cr, meta, explicacao){
+  const metaHtml = (meta !== undefined && meta !== null) ? '<td class="cr-meta">'+PCT(meta)+'</td>' : '<td>—</td>';
+  const labelHtml = explicacao ? tt_(label, explicacao) : label;
+  return '<tr class="cr-row"><td>'+labelHtml+'</td><td>—</td><td>—</td>' +
+    '<td class="cr-value">'+PCT(cr.safra)+'</td>' +
+    '<td class="cr-value">'+PCT(cr.mesAnterior)+'</td>' +
+    '<td class="cr-value">'+PCT(cr.total)+'</td>' +
+    metaHtml + '</tr>';
+}
+
+function montarCardCanal_(canalNome, linhasCanal, classe){
+  const mapaEtapas = {};
+  linhasCanal.forEach(function(l){ mapaEtapas[l.Etapa] = l; });
+  const crs = calcularCRsCanal_(mapaEtapas);
+  const metaCanal = META_CR_POR_CANAL[classe] || {};
+
+  let rows = '';
+  ORDEM_ETAPAS_CANAL.forEach(function(etapaNome){
+    const l = mapaEtapas[etapaNome];
+    if(!l) return;
+    const isMoney = etapaNome.indexOf('R$')>=0;
+    const fmt = isMoney ? brl : NUM;
+    const projetado = Number(l.Projetado)||0;
+    const total = Number(l.RealizadoTotal)||0;
+    const pctProj = projetado>0 ? Math.round((total/projetado)*100)+'%' : '—';
+    rows += '<tr><td>'+l.Etapa+'</td>'+
+      '<td>'+(l.Planejado!==''?fmt(l.Planejado):'—')+'</td>'+
+      '<td>'+(l.Projetado!==''?fmt(l.Projetado):'—')+'</td>'+
+      '<td class="safra-col">'+fmt(l.RealizadoSafra)+'</td>'+
+      '<td class="mesant-col">'+fmt(l.RealizadoMesAnterior)+'</td>'+
+      '<td class="total-col">'+fmt(l.RealizadoTotal)+'</td>'+
+      '<td>'+pctProj+'</td></tr>';
+
+    if(etapaNome==='Conexão') rows += linhaCR_('CR1 · Conexão / Leads', crs.cr1, metaCanal.cr1, '<strong>CR1</strong> mede quantos leads viraram conexão (SDR conseguiu falar com o lead).<br><br>Fórmula: <strong>Conexão ÷ Leads</strong>, calculado separadamente para Mês Atual, Mês Anterior e Total.');
+    if(etapaNome==='Agendamento') rows += linhaCR_('CR2 · Agendamento / Conexão', crs.cr2, metaCanal.cr2, '<strong>CR2</strong> mede quantas conexões viraram agendamento de reunião.<br><br>Fórmula: <strong>Agendamento ÷ Conexão</strong>, calculado separadamente para Mês Atual, Mês Anterior e Total.');
+    if(etapaNome==='Show') rows += linhaCR_('CR3 · Show / Agendamento', crs.cr3, metaCanal.cr3, '<strong>CR3</strong> mede quantos agendamentos viraram reunião de fato realizada (show).<br><br>Fórmula: <strong>Show ÷ Agendamento</strong>, calculado separadamente para Mês Atual, Mês Anterior e Total.');
+    if(etapaNome==='Venda (Qtd)') rows += linhaCR_('CR4 · Venda / Show', crs.cr4, metaCanal.cr4, '<strong>CR4</strong> mede quantas reuniões viraram venda fechada.<br><br>Fórmula: <strong>Venda ÷ Show</strong>, calculado separadamente para Mês Atual, Mês Anterior e Total.');
+  });
+
+  rows += '<tr class="cr-row hit-row"><td>'+tt_('Hit Rate · Venda / Leads', '<strong>Hit Rate</strong> mede a conversão do funil inteiro, do primeiro ao último passo: quantos leads viraram venda.<br><br>Fórmula: <strong>Venda ÷ Leads</strong>, calculado separadamente para Mês Atual, Mês Anterior e Total.')+'</td><td>—</td><td>—</td>' +
+    '<td class="cr-value">'+PCT(crs.hitRate.safra)+'</td>' +
+    '<td class="cr-value">'+PCT(crs.hitRate.mesAnterior)+'</td>' +
+    '<td class="cr-value">'+PCT(crs.hitRate.total)+'</td>' +
+    '<td>—</td></tr>';
+
+  return '<div class="canal-card '+classe+'">' +
+    '<div class="canal-header '+classe+'">'+canalNome+'</div>' +
+    '<table class="canal-table"><thead><tr>' +
+      '<th style="text-align:left">Etapa</th><th>'+tt_('Planejado','Meta definida na planilha externa de Performance Canais. Só existe pra Tráfego Pago e Consolidado.')+'</th><th>'+tt_('Projetado','Projeção definida na mesma planilha externa.')+'</th>' +
+      '<th>Mês Atual</th><th>Mês Anterior</th><th>Total</th><th>% Proj. / Meta CR</th>' +
+    '</tr></thead><tbody>'+rows+'</tbody></table>' +
+  '</div>';
+}
+
+function construirGraficosCanais_(linhas){
+  const porCanalEtapa = {};
+  linhas.forEach(function(l){
+    if(!porCanalEtapa[l.Canal]) porCanalEtapa[l.Canal] = {};
+    porCanalEtapa[l.Canal][l.Etapa] = Number(l.RealizadoTotal)||0;
+  });
+
+  const nomesCanais = ['Tráfego Pago','Base','Indicação'];
+  const classePorNomeCanal = {'Tráfego Pago':'trafego','Base':'base','Indicação':'indicacao'};
+  const metrics = ['Leads','Show','Venda (Qtd)'];
+
+  const barrasHtml = metrics.map(function(metrica){
+    const valores = nomesCanais.map(function(nomeCanal){
+      return (porCanalEtapa[nomeCanal] && porCanalEtapa[nomeCanal][metrica]) || 0;
+    });
+    const max = Math.max.apply(null, valores.concat([1]));
+    const linhas2 = nomesCanais.map(function(nomeCanal, i){
+      const v = valores[i];
+      const pct = Math.round((v/max)*100);
+      const classe = classePorNomeCanal[nomeCanal];
+      return '<div class="barra-linha"><div class="barra-nome">'+nomeCanal+'</div><div class="barra-track"><div class="barra-fill '+classe+'" style="width:'+Math.max(pct,2)+'%"></div></div><div class="barra-valor-fora">'+NUM(v)+'</div></div>';
+    }).join('');
+    return '<div class="barra-grupo"><div class="barra-grupo-label">'+metrica+'</div>'+linhas2+'</div>';
+  }).join('');
+
+  const graficoBarras = '<div class="grafico-card"><div class="grafico-titulo">Leads · Show · Vendas por Canal</div>'+barrasHtml+'</div>';
+
+  const valoresPizza = nomesCanais.map(function(nomeCanal){
+    return (porCanalEtapa[nomeCanal] && porCanalEtapa[nomeCanal]['Venda (R$)']) || 0;
+  });
+  const totalPizza = valoresPizza.reduce(function(a,b){ return a+b; }, 0);
+  const coresPizza = ['#22d3ee','#f59e0b','#a78bfa'];
+  let acumulado = 0;
+  const gradientStops = valoresPizza.map(function(v,i){
+    const pctIni = totalPizza>0 ? (acumulado/totalPizza)*360 : 0;
+    acumulado += v;
+    const pctFim = totalPizza>0 ? (acumulado/totalPizza)*360 : 0;
+    return coresPizza[i]+' '+pctIni.toFixed(1)+'deg '+pctFim.toFixed(1)+'deg';
+  }).join(', ');
+
+  const legenda = nomesCanais.map(function(nomeCanal,i){
+    const v = valoresPizza[i];
+    const pct = totalPizza>0 ? Math.round((v/totalPizza)*100) : 0;
+    const classe = classePorNomeCanal[nomeCanal];
+    return '<div class="pizza-legenda-item"><span class="pizza-dot '+classe+'"></span>'+nomeCanal+' <span class="pizza-pct">'+pct+'%</span></div>';
+  }).join('');
+
+  const pizzaHtml = totalPizza>0
+    ? '<div class="pizza-wrap"><div class="pizza-svg" style="width:230px;height:230px;border-radius:50%;background:conic-gradient('+gradientStops+')"></div><div class="pizza-legenda">'+legenda+'</div></div>'
+    : '<div class="zona-empty" style="padding:10px">Sem vendas no periodo ainda.</div>';
+
+  const graficoPizza = '<div class="grafico-card"><div class="grafico-titulo">Participação no Vendido</div>'+pizzaHtml+'</div>';
+
+  return '<div class="graficos-grid">'+graficoBarras+graficoPizza+'</div>';
+}
+
+function fmtQtdValor_(qtd, valor){
+  qtd = Number(qtd)||0; valor = Number(valor)||0;
+  return brl(valor) + '<div class="pc-sub">'+qtd+'x</div>';
+}
+
+function construirTabelaVendedorCanal_(linhas){
+  if(!linhas || linhas.length===0) return '<div class="canal-card consolidado"><div class="canal-header consolidado">Closers</div><div class="zona-empty" style="padding:20px">Sem dados ainda.</div></div>';
+  const ordenado = linhas.slice().sort(function(a,b){ return (Number(b.TotalValor)||0)-(Number(a.TotalValor)||0); });
+  const rows = ordenado.map(function(l){
+    return '<tr><td><span class="pc-avatar">'+avatarConteudo_(l.Nome)+'</span>'+l.Nome+'</td>'+
+      '<td class="safra-col">'+fmtQtdValor_(l.TrafegoSafraQtd,l.TrafegoSafraValor)+'</td>'+
+      '<td class="mesant-col">'+fmtQtdValor_(l.TrafegoMesQtd,l.TrafegoMesValor)+'</td>'+
+      '<td class="safra-col">'+fmtQtdValor_(l.BaseSafraQtd,l.BaseSafraValor)+'</td>'+
+      '<td class="mesant-col">'+fmtQtdValor_(l.BaseMesQtd,l.BaseMesValor)+'</td>'+
+      '<td class="safra-col">'+fmtQtdValor_(l.IndicacaoSafraQtd,l.IndicacaoSafraValor)+'</td>'+
+      '<td class="mesant-col">'+fmtQtdValor_(l.IndicacaoMesQtd,l.IndicacaoMesValor)+'</td>'+
+      '<td class="total-col">'+brl(l.TotalValor)+'<div class="pc-sub">'+NUM(l.TotalQtd)+' venda(s)</div></td></tr>';
+  }).join('');
+  return '<div class="canal-card consolidado"><div class="canal-header consolidado">Closers</div>' +
+    '<table class="canal-table"><thead>'+
+    '<tr><th style="text-align:left">Closer</th><th colspan="2">Tráfego Pago</th><th colspan="2">Base</th><th colspan="2">Indicação</th><th>Total</th></tr>'+
+    '<tr><th></th><th>Mês Atual</th><th>Mês Ant.</th><th>Mês Atual</th><th>Mês Ant.</th><th>Mês Atual</th><th>Mês Ant.</th><th></th></tr>'+
+    '</thead><tbody>'+rows+'</tbody></table></div>';
+}
+
+function construirTabelaEtapaSdr_(titulo, linhas, campos){
+  if(!linhas || linhas.length===0) return '';
+  const ordenado = linhas.slice().sort(function(a,b){
+    function total(l){ return (Number(l[campos.trafegoAtual])||0)+(Number(l[campos.trafegoAnt])||0)+(Number(l[campos.baseAtual])||0)+(Number(l[campos.baseAnt])||0)+(Number(l[campos.indAtual])||0)+(Number(l[campos.indAnt])||0); }
+    return total(b) - total(a);
+  });
+  const rows = ordenado.map(function(l){
+    const trafegoAtual = Number(l[campos.trafegoAtual])||0, trafegoAnt = campos.trafegoAnt ? (Number(l[campos.trafegoAnt])||0) : 0;
+    const baseAtual = Number(l[campos.baseAtual])||0, baseAnt = campos.baseAnt ? (Number(l[campos.baseAnt])||0) : 0;
+    const indAtual = Number(l[campos.indAtual])||0, indAnt = campos.indAnt ? (Number(l[campos.indAnt])||0) : 0;
+    const total = trafegoAtual+trafegoAnt+baseAtual+baseAnt+indAtual+indAnt;
+    return '<tr><td><span class="pc-avatar">'+avatarConteudo_(l.Nome)+'</span>'+l.Nome+'</td>'+
+      '<td class="safra-col">'+NUM(trafegoAtual)+'</td><td class="mesant-col">'+NUM(trafegoAnt)+'</td>'+
+      '<td class="safra-col">'+NUM(baseAtual)+'</td><td class="mesant-col">'+NUM(baseAnt)+'</td>'+
+      '<td class="safra-col">'+NUM(indAtual)+'</td><td class="mesant-col">'+NUM(indAnt)+'</td>'+
+      '<td class="total-col">'+NUM(total)+'</td></tr>';
+  }).join('');
+  return '<div class="canal-card"><div class="canal-header consolidado">'+titulo+'</div>' +
+    '<table class="canal-table"><thead>'+
+    '<tr><th style="text-align:left">SDR</th><th colspan="2">Tráfego Pago</th><th colspan="2">Base</th><th colspan="2">Indicação</th><th>Total</th></tr>'+
+    '<tr><th></th><th>Mês Atual</th><th>Mês Ant.</th><th>Mês Atual</th><th>Mês Ant.</th><th>Mês Atual</th><th>Mês Ant.</th><th></th></tr>'+
+    '</thead><tbody>'+rows+'</tbody></table></div>';
+}
+
+function construirTabelaSdrCanal_(linhas){
+  if(!linhas || linhas.length===0) return '<div class="canal-card consolidado"><div class="canal-header consolidado">SDRs</div><div class="zona-empty" style="padding:20px">Sem dados ainda.</div></div>';
+
+  const etapas = [
+    { titulo: 'Leads', campos: { trafegoAtual:'Trafego_Leads', trafegoAnt:null, baseAtual:'Base_Leads', baseAnt:null, indAtual:'Indicacao_Leads', indAnt:null } },
+    { titulo: 'Conexão', campos: { trafegoAtual:'Trafego_ConexaoAtual', trafegoAnt:'Trafego_ConexaoAnterior', baseAtual:'Base_ConexaoAtual', baseAnt:'Base_ConexaoAnterior', indAtual:'Indicacao_ConexaoAtual', indAnt:'Indicacao_ConexaoAnterior' } },
+    { titulo: 'Agendamento', campos: { trafegoAtual:'Trafego_AgendAtual', trafegoAnt:'Trafego_AgendAnterior', baseAtual:'Base_AgendAtual', baseAnt:'Base_AgendAnterior', indAtual:'Indicacao_AgendAtual', indAnt:'Indicacao_AgendAnterior' } },
+    { titulo: 'Show', campos: { trafegoAtual:'Trafego_ShowAtual', trafegoAnt:'Trafego_ShowAnterior', baseAtual:'Base_ShowAtual', baseAnt:'Base_ShowAnterior', indAtual:'Indicacao_ShowAtual', indAnt:'Indicacao_ShowAnterior' } },
+    { titulo: 'Venda', campos: { trafegoAtual:'Trafego_VendaAtual', trafegoAnt:'Trafego_VendaAnterior', baseAtual:'Base_VendaAtual', baseAnt:'Base_VendaAnterior', indAtual:'Indicacao_VendaAtual', indAnt:'Indicacao_VendaAnterior' } }
+  ];
+
+  return etapas.map(function(e){ return construirTabelaEtapaSdr_(e.titulo, linhas, e.campos); }).join('');
+}
+
+function renderCanais(linhas){
+  const elFunil = document.getElementById('canais-funil');
+  if(!linhas || linhas.length===0){
+    elFunil.innerHTML = '<div class="zona-empty" style="padding:20px">Sem dados de canais ainda.</div>';
+    return;
+  }
+
+  const porCanal = {};
+  linhas.forEach(function(l){
+    if(!porCanal[l.Canal]) porCanal[l.Canal] = [];
+    porCanal[l.Canal].push(l);
+  });
+
+  const classePorCanal = { 'Tráfego Pago':'trafego', 'Base':'base', 'Indicação':'indicacao', 'Consolidado':'consolidado' };
+  const consolidado = somarConsolidadoCanais_(linhas);
+  const ordemCanais = ['Consolidado', 'Tráfego Pago', 'Base', 'Indicação'];
+
+  const cardsHtml = ordemCanais.map(function(canalNome){
+    const linhasCanal = canalNome==='Consolidado' ? consolidado : porCanal[canalNome];
+    if(!linhasCanal || linhasCanal.length===0) return '';
+    return montarCardCanal_(canalNome, linhasCanal, classePorCanal[canalNome]);
+  }).join('');
+
+  const graficosHtml = construirGraficosCanais_(linhas);
+
+  elFunil.innerHTML =
+    '<div class="sec-hdr"><span class="sec-lbl">Performance por Canal</span><div class="sec-line"></div></div>' +
+    cardsHtml +
+    '<div class="sec-hdr"><span class="sec-lbl">Visão Gráfica</span><div class="sec-line"></div></div>' +
+    graficosHtml;
+}
+
+// ===== PODIO =====
+function podium(top3, valK, metaK){
+  const ord=[{i:1,cls:'s'},{i:0,cls:'f'},{i:2,cls:'t'}];
+  const bases=['2º','1º','3º'];
+  return '<div class="podium">'+ord.map(function(o){
+    const p=top3[o.i];
+    if(!p) return '<div class="ps '+o.cls+'"></div>';
+    const val=p[valK]||0, meta=p[metaK]||0, pct=meta>0?val/meta:null;
+    const nome=p.nome.split(' ').slice(0,2).join('<br>');
+    const lbl = valK.indexOf('Faturamento')>=0 ? brl(val) : NUM(val);
+    return '<div class="ps '+o.cls+'"><div class="av">'+avatarConteudo_(p.nome)+'</div><div class="pn">'+nome+'</div><div class="pv">'+lbl+'</div><div class="pct-lbl">'+PCT(pct)+'</div><div class="pb">'+bases[ord.indexOf(o)]+'</div></div>';
+  }).join('')+'</div>';
+}
+
+// ===== ZONAS (Meta) =====
+function zonasMeta(ranking, valK, metaK){
+  const withMeta = ranking.filter(function(p){ return (p[metaK]||0) > 0; });
+  const super_ = withMeta.filter(function(p){ return p[valK]/p[metaK] >= 1.3; });
+  const ok = withMeta.filter(function(p){ const r=p[valK]/p[metaK]; return r>=1.0 && r<1.3; });
+  function chip(p){
+    const val=p[valK]||0, meta=p[metaK]||1;
+    const lbl = valK.indexOf('Faturamento')>=0 ? brl(val) : NUM(val);
+    return '<div class="zona-chip"><div class="zona-av">'+avatarConteudo_(p.nome)+'</div><div class="zona-info"><div class="zona-nome">'+p.nome.split(' ').slice(0,2).join(' ')+'</div><div class="zona-val">'+lbl+' · '+PCT(val/meta)+'</div></div></div>';
+  }
+  return '<div class="zona-card"><div class="zona-header"><span class="zona-badge">Super Meta >=130%</span><span class="zona-sub">'+super_.length+'</span></div><div class="zona-pessoas">'+(super_.length?super_.map(chip).join(''):'<div class="zona-empty">Nenhum ainda</div>')+'</div></div>'+
+    '<div class="zona-card"><div class="zona-header"><span class="zona-badge">Meta 100-129%</span><span class="zona-sub">'+ok.length+'</span></div><div class="zona-pessoas">'+(ok.length?ok.map(chip).join(''):'<div class="zona-empty">Nenhum ainda</div>')+'</div></div>';
+}
+
+// ===== TABELA =====
+function tabela(ranking, valK, metaK, paceK){
+  const ordenado = ranking.slice().sort(function(a,b){ return (b[valK]||0)-(a[valK]||0); });
+  const isMoney = valK.indexOf('Faturamento')>=0;
+  const fmt = isMoney ? brl : NUM;
+  const rows = ordenado.map(function(p,i){
+    const meta=p[metaK]||0, pace=p[paceK]>1?p[paceK]:null, real=p[valK]||0;
+    const gap = pace!==null ? real-pace : null;
+    const ok = pace!==null ? real>=pace : null;
+    return '<tr><td><span class="rp">'+(i+1)+'</span>'+p.nome.split(' ').slice(0,2).join(' ')+'</td>'+
+      '<td style="color:rgba(255,255,255,.65)">'+fmt(meta)+'</td>'+
+      '<td style="color:rgba(255,255,255,.7)">'+(pace!==null?fmt(pace):'—')+'</td>'+
+      '<td style="font-weight:700;color:'+(ok===null?'#fff':ok?'#4ade80':'#f87171')+'">'+fmt(real)+'</td>'+
+      '<td style="color:'+(ok===null?'rgba(255,255,255,.4)':ok?'#4ade80':'#f87171')+'">'+(gap!==null?(gap>=0?'+':'')+fmt(gap):'—')+'</td>'+
+      '<td><span class="pill '+(ok===null?'a':ok?'g':'r')+'">'+(ok===null?'—':ok?'No pace':'Abaixo')+'</span></td></tr>';
+  }).join('');
+  return '<table><thead><tr><th style="text-align:left">Nome</th>'+
+    '<th>'+tt_('Meta','Meta definida na aba Metas_Ranking_Fortaleza da sua planilha.')+'</th>'+
+    '<th>'+tt_('Pace','Meta × dias úteis passados ÷ dias úteis do mês (calculado automaticamente).')+'</th>'+
+    '<th>'+tt_('Realizado','Contagem/soma via Ploomes no período selecionado.')+'</th>'+
+    '<th>'+tt_('GAP Pace','Realizado − Pace.')+'</th>'+
+    '<th>'+tt_('Status','"No pace" se Realizado ≥ Pace; "Abaixo" caso contrário.')+'</th>'+
+    '</tr></thead><tbody>'+
+    (rows || '<tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,.4);padding:20px">Sem dados no periodo</td></tr>') +
+    '</tbody></table>';
+}
+
+function renderSubpanel(elId, ranking, valK, metaK, paceK){
+  const el = document.getElementById(elId);
+  if(!ranking || ranking.length===0){
+    el.innerHTML = '<div class="zona-empty" style="padding:20px">Sem dados no periodo.</div>';
+    return;
+  }
+  const top3 = ranking.slice().sort(function(a,b){ return (b[valK]||0)-(a[valK]||0); }).slice(0,3);
+  el.innerHTML =
+    '<div class="sec">Ranking</div>' +
+    '<div class="main-layout">' +
+      '<div class="left-col">' +
+        '<div class="pod-card"><div class="pod-title">Podio</div>'+podium(top3, valK, metaK)+'</div>' +
+        '<div class="zonas">'+zonasMeta(ranking, valK, metaK)+'</div>' +
+      '</div>' +
+      '<div class="table-wrap">'+tabela(ranking, valK, metaK, paceK)+'</div>' +
+    '</div>';
+}
+
+// ===== SEM PODIO — usado em Agendamento e Show (o que importa e' o pace, nao o ranking em si) =====
+function zonasPace_(ranking, valK, paceK){
+  const noPace = [], foraPace = [], semPace = [];
+  ranking.forEach(function(p){
+    const pace = p[paceK] > 1 ? p[paceK] : null;
+    if(pace === null){
+      semPace.push(p);
+    } else if((p[valK]||0) >= pace){
+      noPace.push(p);
+    } else {
+      foraPace.push(p);
+    }
+  });
+  return { noPace: noPace, foraPace: foraPace, semPace: semPace };
+}
+
+function renderSubpanelPace_(elId, ranking, valK, metaK, paceK){
+  const el = document.getElementById(elId);
+  if(!ranking || ranking.length===0){
+    el.innerHTML = '<div class="zona-empty" style="padding:20px">Sem dados no periodo.</div>';
+    return;
+  }
+
+  const zonas = zonasPace_(ranking, valK, paceK);
+
+  function nomesLista(lista){
+    if(lista.length===0) return '<div class="pace-empty">Nenhum ainda</div>';
+    return '<div class="pace-names-list">'+lista.map(function(p){
+      return '<span class="pace-pessoa"><span class="pc-avatar">'+avatarConteudo_(p.nome)+'</span>'+p.nome.split(' ').slice(0,2).join(' ')+'</span>';
+    }).join('')+'</div>';
+  }
+
+  const boxes = '<div class="pace-boxes">' +
+    '<div class="pace-box ok"><div class="pace-box-header"><span class="pace-badge ok">&#10003; NO PACE</span><span class="pace-count">'+zonas.noPace.length+' pessoa(s)</span></div>'+nomesLista(zonas.noPace)+'</div>' +
+    '<div class="pace-box bad"><div class="pace-box-header"><span class="pace-badge bad">&#10007; FORA DO PACE</span><span class="pace-count">'+zonas.foraPace.length+' pessoa(s)</span></div>'+nomesLista(zonas.foraPace)+'</div>' +
+  '</div>';
+
+  function chip(p){
+    const val = p[valK] || 0;
+    const isMoney = valK.indexOf('Faturamento')>=0;
+    const lbl = isMoney ? brl(val) : NUM(val);
+    return '<div class="zona-chip"><div class="zona-av">'+avatarConteudo_(p.nome)+'</div><div class="zona-info"><div class="zona-nome">'+p.nome.split(' ').slice(0,2).join(' ')+'</div><div class="zona-val">'+lbl+'</div></div></div>';
+  }
+
+  el.innerHTML = '<div class="sec">Ranking</div>' + boxes + tabela(ranking, valK, metaK, paceK);
+}
+
+function renderKpis(elId, ranking, valK, metaK, paceK){
+  const totalMeta = ranking.reduce(function(s,p){ return s+(p[metaK]||0); }, 0);
+  const totalPace = ranking.reduce(function(s,p){ return s+(p[paceK]||0); }, 0);
+  const totalReal = ranking.reduce(function(s,p){ return s+(p[valK]||0); }, 0);
+  const gap = totalReal - totalPace;
+  const isMoney = valK.indexOf('Faturamento')>=0;
+  const fmt = isMoney ? brl : NUM;
+  document.getElementById(elId).innerHTML =
+    '<div class="kpi"><div class="kpi-l">'+tt_('Meta','Soma da Meta de todo o time (aba Metas_Ranking_Fortaleza).')+'</div><div class="kpi-v">'+fmt(totalMeta)+'</div></div>'+
+    '<div class="kpi"><div class="kpi-l">'+tt_('Pace','Soma do Pace de todo o time (Meta × proporção de dias úteis).')+'</div><div class="kpi-v">'+fmt(totalPace)+'</div></div>'+
+    '<div class="kpi"><div class="kpi-l">'+tt_('Realizado','Soma do que já foi realizado por todo o time no período.')+'</div><div class="kpi-v '+(isMoney?'money':'')+'">'+fmt(totalReal)+'</div></div>'+
+    '<div class="kpi"><div class="kpi-l">'+tt_('GAP para o Pace','Realizado − Pace do time todo. Verde = no pace ou à frente.')+'</div><div class="kpi-v" style="color:'+(gap>=0?'#4ade80':'#f87171')+'">'+(gap>=0?'+':'')+fmt(gap)+'</div></div>';
+}
+
+function construirTabelaEtapaCloser_(titulo, linhas, campos, isMoney){
+  if(!linhas || linhas.length===0) return '';
+  const ordenado = linhas.slice().sort(function(a,b){
+    function total(l){ return (Number(l[campos.trafegoAtual])||0)+(Number(l[campos.trafegoAnt])||0)+(Number(l[campos.baseAtual])||0)+(Number(l[campos.baseAnt])||0)+(Number(l[campos.indAtual])||0)+(Number(l[campos.indAnt])||0); }
+    return total(b) - total(a);
+  });
+  const fmt = isMoney ? brl : NUM;
+  const rows = ordenado.map(function(l){
+    const trafegoAtual = Number(l[campos.trafegoAtual])||0, trafegoAnt = Number(l[campos.trafegoAnt])||0;
+    const baseAtual = Number(l[campos.baseAtual])||0, baseAnt = Number(l[campos.baseAnt])||0;
+    const indAtual = Number(l[campos.indAtual])||0, indAnt = Number(l[campos.indAnt])||0;
+    const total = trafegoAtual+trafegoAnt+baseAtual+baseAnt+indAtual+indAnt;
+    return '<tr><td><span class="pc-avatar">'+avatarConteudo_(l.Nome)+'</span>'+l.Nome+'</td>'+
+      '<td class="safra-col">'+fmt(trafegoAtual)+'</td><td class="mesant-col">'+fmt(trafegoAnt)+'</td>'+
+      '<td class="safra-col">'+fmt(baseAtual)+'</td><td class="mesant-col">'+fmt(baseAnt)+'</td>'+
+      '<td class="safra-col">'+fmt(indAtual)+'</td><td class="mesant-col">'+fmt(indAnt)+'</td>'+
+      '<td class="total-col">'+fmt(total)+'</td></tr>';
+  }).join('');
+  return '<div class="canal-card"><div class="canal-header consolidado">'+titulo+'</div>' +
+    '<table class="canal-table"><thead>'+
+    '<tr><th style="text-align:left">Closer</th><th colspan="2">Tráfego Pago</th><th colspan="2">Base</th><th colspan="2">Indicação</th><th>Total</th></tr>'+
+    '<tr><th></th><th>Mês Atual</th><th>Mês Ant.</th><th>Mês Atual</th><th>Mês Ant.</th><th>Mês Atual</th><th>Mês Ant.</th><th></th></tr>'+
+    '</thead><tbody>'+rows+'</tbody></table></div>';
+}
+
+function renderCloserPorCanal(linhas){
+  const el = document.getElementById('closer-canal');
+  if(!linhas || linhas.length===0){
+    el.innerHTML = '<div class="zona-empty" style="padding:20px">Sem dados ainda.</div>';
+    return;
+  }
+  el.innerHTML =
+    construirTabelaEtapaCloser_('Agendamento', linhas, { trafegoAtual:'Trafego_AgendAtual', trafegoAnt:'Trafego_AgendAnterior', baseAtual:'Base_AgendAtual', baseAnt:'Base_AgendAnterior', indAtual:'Indicacao_AgendAtual', indAnt:'Indicacao_AgendAnterior' }, false) +
+    construirTabelaEtapaCloser_('Show', linhas, { trafegoAtual:'Trafego_ShowAtual', trafegoAnt:'Trafego_ShowAnterior', baseAtual:'Base_ShowAtual', baseAnt:'Base_ShowAnterior', indAtual:'Indicacao_ShowAtual', indAnt:'Indicacao_ShowAnterior' }, false) +
+    construirTabelaEtapaCloser_('Venda (R$)', linhas, { trafegoAtual:'Trafego_VendaAtualValor', trafegoAnt:'Trafego_VendaAntValor', baseAtual:'Base_VendaAtualValor', baseAnt:'Base_VendaAntValor', indAtual:'Indicacao_VendaAtualValor', indAnt:'Indicacao_VendaAntValor' }, true);
+}
+
+function renderCloser(ranking){
+  renderKpis('ck', ranking, 'vendaFaturamento', 'metaVenda', 'paceVenda');
+  renderSubpanel('closer-vendas', ranking, 'vendaFaturamento', 'metaVenda', 'paceVenda');
+  renderSubpanelPace_('closer-agend', ranking, 'agendRealizado', 'metaAgend', 'paceAgend');
+  renderSubpanelPace_('closer-show', ranking, 'showRealizado', 'metaShow', 'paceShow');
+}
+
+function renderSdr(ranking){
+  renderKpis('sk', ranking, 'vendaFaturamento', 'metaVenda', 'paceVenda');
+  renderSubpanel('sdr-vendas', ranking, 'vendaFaturamento', 'metaVenda', 'paceVenda');
+  renderSubpanel('sdr-agend', ranking, 'agendRealizado', 'metaAgend', 'paceAgend');
+  renderSubpanel('sdr-show', ranking, 'showRealizado', 'metaShow', 'paceShow');
+}
+
+function renderSdrPorCanal(linhas){
+  const el = document.getElementById('sdr-canal');
+  if(!linhas || linhas.length===0){
+    el.innerHTML = '<div class="zona-empty" style="padding:20px">Sem dados ainda.</div>';
+    return;
+  }
+  el.innerHTML = construirTabelaSdrCanal_(linhas);
+}
+
+function renderLigacoes(linhas){
+  const el = document.getElementById('sdr-ligacoes');
+  if(!linhas || linhas.length===0){
+    el.innerHTML = '<div class="zona-empty" style="padding:20px">Sem ligações registradas ainda.</div>';
+    return;
+  }
+  const ordenado = linhas.slice().sort(function(a,b){ return (Number(b.MesTotal)||0)-(Number(a.MesTotal)||0); });
+  const rows = ordenado.map(function(l){
+    return '<tr><td><span class="pc-avatar">'+avatarConteudo_(l.Nome)+'</span>'+l.Nome+'</td>'+
+      '<td class="total-col">'+NUM(l.HojeTotal)+'</td><td class="total-col">'+NUM(l.HojeAtendidas)+'</td>'+
+      '<td class="total-col">'+NUM(l.SemanaTotal)+'</td><td class="total-col">'+NUM(l.SemanaAtendidas)+'</td>'+
+      '<td class="total-col">'+NUM(l.MesTotal)+'</td><td class="total-col">'+NUM(l.MesAtendidas)+'</td>'+
+      '<td class="total-col">'+PCT(l.MesHitRate)+'</td></tr>';
+  }).join('');
+  el.innerHTML =
+    '<div class="sec">'+tt_('Ligações por Período','Via integração com a API4com. Mostra só ligações de ramais cadastrados na Ramais_Fortaleza. Hit Rate = Atendidas ÷ Feitas.')+'</div>' +
+    '<table class="canal-table"><thead>'+
+      '<tr><th style="text-align:left">SDR</th><th colspan="2">Hoje</th><th colspan="2">Semana</th><th colspan="3">Mês</th></tr>'+
+      '<tr><th></th><th>'+tt_('Feitas','Ligações realizadas.')+'</th><th>'+tt_('Atendidas','Ligações que a pessoa do outro lado atendeu.')+'</th>'+
+        '<th>Feitas</th><th>Atendidas</th>'+
+        '<th>Feitas</th><th>Atendidas</th><th>'+tt_('Hit Rate','Atendidas ÷ Feitas, no mês.')+'</th></tr>'+
+    '</thead><tbody>'+rows+'</tbody></table>';
+}
+
+// ===== NAVEGACAO =====
+function swMain(name, btn){
+  document.querySelectorAll('.main-tab').forEach(function(t){ t.classList.remove('on'); });
+  document.querySelectorAll('.main-panel').forEach(function(p){ p.classList.remove('on'); });
+  btn.classList.add('on');
+  document.getElementById('panel-'+name).classList.add('on');
+}
+function swSub(group, name, btn){
+  document.querySelectorAll('#panel-'+group+' .subtab').forEach(function(t){ t.classList.remove('on'); });
+  document.querySelectorAll('#panel-'+group+' .subpanel').forEach(function(p){ p.classList.remove('on'); });
+  btn.classList.add('on');
+  document.getElementById(group+'-'+name).classList.add('on');
+}
+
+// ===== FETCH =====
+const CACHE_TTL = 5*60*1000;
+function cacheGet(key){
+  try{
+    const raw=localStorage.getItem(key);
+    if(!raw) return null;
+    const obj=JSON.parse(raw);
+    if(Date.now()-obj.ts>CACHE_TTL*4) return null;
+    return obj.data;
+  }catch(e){ return null; }
+}
+function cacheSet(key,data){
+  try{ localStorage.setItem(key, JSON.stringify({ts:Date.now(),data:data})); }catch(e){}
+}
+async function fetchJSON(url){
+  const res = await fetch(url, {cache:'no-store'});
+  return res.json();
+}
+
+async function loadAll(useCache){
+  const cachedCloser = useCache ? cacheGet('rk_closer') : null;
+  const cachedSdr = useCache ? cacheGet('rk_sdr') : null;
+  const cachedFunil = useCache ? cacheGet('rk_funil') : null;
+  const cachedSheet = useCache ? cacheGet('rk_sheet') : null;
+  const cachedCanais = useCache ? cacheGet('rk_canais') : null;
+  const cachedSemanas = useCache ? cacheGet('rk_semanas') : null;
+  const cachedCloserCanal = useCache ? cacheGet('rk_closer_canal') : null;
+  const cachedPessoaSdr = useCache ? cacheGet('rk_pessoa_sdr') : null;
+  const cachedLigacoes = useCache ? cacheGet('rk_ligacoes') : null;
+  if(cachedCloser) renderCloser(cachedCloser);
+  if(cachedSdr) renderSdr(cachedSdr);
+  if(cachedCloser || cachedSdr) renderPodioTab_(cachedCloser || [], cachedSdr || []);
+  if(cachedLigacoes) renderLigacoes(cachedLigacoes);
+  if(cachedFunil && cachedSheet) renderPlacar(cachedSheet, cachedFunil, cachedSemanas || [], cachedCanais || [], cachedCloser || [], cachedSdr || []);
+  if(cachedCanais) renderCanais(cachedCanais);
+  if(cachedCloserCanal) renderCloserPorCanal(cachedCloserCanal);
+  if(cachedPessoaSdr) renderSdrPorCanal(cachedPessoaSdr);
+
+  try{
+    const q = periodoQuery_();
+    const closer = await fetchJSON(BASE_URL + '?tipo=ranking_closer' + q);
+    const sdr = await fetchJSON(BASE_URL + '?tipo=ranking_sdr' + q);
+    const funil = await fetchJSON(BASE_URL + '?tipo=funil' + q);
+    const sheet = await fetchPlacarMeta();
+    const canais = await fetchJSON(BASE_URL + '?tipo=canais' + q);
+    const semanas = await fetchJSON(BASE_URL + '?tipo=semanas' + q);
+    const closerCanal = await fetchJSON(BASE_URL + '?tipo=closerfunilcanal' + q);
+    const pessoaSdr = await fetchJSON(BASE_URL + '?tipo=pessoacanal_sdr' + q);
+    const ligacoes = await fetchJSON(BASE_URL + '?tipo=ligacoes' + q);
+    renderCloser(closer);
+    renderSdr(sdr);
+    renderPodioTab_(closer, sdr);
+    renderLigacoes(ligacoes);
+    renderPlacar(sheet, funil, semanas, canais, closer, sdr);
+    renderCanais(canais);
+    renderCloserPorCanal(closerCanal);
+    renderSdrPorCanal(pessoaSdr);
+    cacheSet('rk_closer', closer);
+    cacheSet('rk_sdr', sdr);
+    cacheSet('rk_funil', funil);
+    cacheSet('rk_sheet', sheet);
+    cacheSet('rk_canais', canais);
+    cacheSet('rk_semanas', semanas);
+    cacheSet('rk_closer_canal', closerCanal);
+    cacheSet('rk_pessoa_sdr', pessoaSdr);
+    cacheSet('rk_ligacoes', ligacoes);
+    document.getElementById('ts').textContent = 'Atualizado as ' + new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){
+    console.error(e);
+    document.getElementById('ts').textContent = 'Erro ao atualizar (mostrando cache)';
+  }
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+}
+
+initTooltips_();
+atualizarLabelPeriodo();
+loadAll(true);
+setInterval(function(){ loadAll(false); }, 5*60*1000);
+</script>
+
+</body>
+</html>
